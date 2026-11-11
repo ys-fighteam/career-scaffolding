@@ -23,6 +23,29 @@
   <div id="root"></div>
   <script src="https://cdn.jsdelivr.net/npm/@stlite/mountable@0.63.1/build/stlite.js"></script>
   <script>
+    window.addEventListener("message", function (event) {
+      if (event.data && event.data.type === "PATHFINDER_SCROLL_TOP") {
+        const selectors = [
+          '[data-testid="stAppViewContainer"]',
+          '[data-testid="stMain"]',
+          "section.main",
+          ".main",
+          ".stApp",
+          "#root",
+          "html",
+          "body",
+        ];
+        selectors.forEach(function (sel) {
+          const el = document.querySelector(sel);
+          if (el) {
+            el.scrollTo({ top: 0, left: 0, behavior: "instant" });
+            el.scrollTop = 0;
+          }
+        });
+        window.scrollTo(0, 0);
+      }
+    });
+
     stlite.mount(
       {
         entrypoint: "app.py",

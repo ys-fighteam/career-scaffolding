@@ -872,12 +872,16 @@ def scroll_to_top_if_step_changed():
             (function() {{
                 function doScroll() {{
                     try {{
+                        window.parent.postMessage({{ type: 'PATHFINDER_SCROLL_TOP' }}, '*');
+                    }} catch (e) {{}}
+                    try {{
                         const parentDoc = window.parent.document;
                         const selectors = [
                             '[data-testid="stAppViewContainer"]',
                             '[data-testid="stMain"]',
                             'section.main',
                             '.main',
+                            '.stApp',
                             'html',
                             'body'
                         ];

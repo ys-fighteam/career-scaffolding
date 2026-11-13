@@ -853,6 +853,7 @@ def init_session_state():
     """단일 페이지 앱(SPA) 동작을 위한 필수 session_state 초기화"""
     defaults = {
         "step": 0,                      # 현재 진행 단계 (0 ~ 7)
+        "max_step": 0,                  # 도달한 최고 단계 (이전 단계 미완료 시 점프 방지)
         "job_category": "IT·데이터",      # 선택한 직무 대분류
         "job_title": "소프트웨어 개발",    # 선택한 세부 직무
         "skill": "",                    # 선택한 메인 핵심 역량
@@ -1227,6 +1228,10 @@ def render_navigation(prev_label="← 이전 단계", next_label="다음 단계 
                 ok, err_msg = validate_current_step(st.session_state.step)
                 if ok:
                     st.session_state.step += 1
+                    st.session_state.max_step = max(
+                        st.session_state.get("max_step", 0),
+                        st.session_state.step,
+                    )
                     st.rerun()
                 else:
                     st.error(err_msg)
@@ -1240,24 +1245,38 @@ def render_sidebar():
 
         # 진행률 표시 (0~7단계)
         current_step = st.session_state.step
+        max_step = max(st.session_state.get("max_step", 0), current_step)
+        st.session_state.max_step = max_step
         progress_ratio = min(1.0, max(0.0, current_step / 7.0))
         st.progress(progress_ratio, text=f"진행률: {int(progress_ratio * 100)}% ({current_step}/7 단계)")
 
-        step_options = [f"S{s['step']}. {s['name']}" for s in CFG["steps"]]
-        selected_nav = st.radio(
-            "이동할 단계 선택",
-            options=range(len(step_options)),
-            format_func=lambda idx: (
-                f"✅ {step_options[idx]}"
-                if idx < current_step
-                else (f"👉 {step_options[idx]}" if idx == current_step else f"⚪ {step_options[idx]}")
-            ),
-            index=current_step,
-            label_visibility="collapsed",
-        )
-        if selected_nav != current_step:
-            st.session_state.step = selected_nav
-            st.rerun()
+        st.markdown("#### 🧭 단계 네비게이션")
+        for s in CFG["steps"]:
+            idx = s["step"]
+            title_text = f"S{idx}. {s['name']}"
+            if idx == current_step:
+                st.button(
+                    f"👉 {title_text}",
+                    key=f"nav_btn_{idx}",
+                    type="primary",
+                    use_container_width=True,
+                )
+            elif idx <= max_step:
+                if st.button(
+                    f"✅ {title_text}",
+                    key=f"nav_btn_{idx}",
+                    use_container_width=True,
+                ):
+                    st.session_state.step = idx
+                    st.rerun()
+            else:
+                st.button(
+                    f"🔒 {title_text}",
+                    key=f"nav_btn_{idx}",
+                    disabled=True,
+                    use_container_width=True,
+                )
+        st.caption("🔒 다음 단계는 필수 항목 입력 후 열립니다.")
 
         st.divider()
         st.markdown("#### 🔑 힌트 모드 및 API Key 설정")
@@ -1338,6 +1357,7 @@ def render_s00():
             st.session_state.hint_mode = "ai" if clean_key else "default"
             if start_now:
                 st.session_state.step = 1
+                st.session_state.max_step = max(st.session_state.get("max_step", 0), 1)
                 st.rerun()
             else:
                 if clean_key:

@@ -922,6 +922,51 @@ def scroll_to_top_if_step_changed():
         )
 
 
+def inject_design_styles():
+    """design.md 지침에 따른 Material Icons 및 타이포그래피 스타일 적용"""
+    st.markdown(
+        """
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" />
+        <style>
+        .ms-icon {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 16px;
+            line-height: 1;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .ms-inline {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 1em;
+            line-height: 1;
+            display: inline-block;
+            vertical-align: -0.16em;
+            margin-right: 6px;
+        }
+        .req-badge {
+            color: #64748b;
+            font-size: 0.78em;
+            font-weight: 500;
+            margin-left: 6px;
+        }
+        .muted-meta {
+            color: #475569;
+            font-size: 0.95em;
+            margin-bottom: 0.75rem;
+        }
+        em, i {
+            color: #64748b;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 def reset_all_state():
     """전체 상태 초기화"""
     for key in list(st.session_state.keys()):
@@ -1020,7 +1065,7 @@ def get_ai_scaffolding_hint(question_id: str, job_title: str, skill: str, curren
             if xhr.status == 200:
                 resp_data = json.loads(xhr.responseText)
                 ai_text = resp_data["choices"][0]["message"]["content"].strip()
-                return f"🤖 **[AI 스캐폴딩 코치 | {question_id} · {job_title}]**\n\n{ai_text}"
+                return f"**AI 스캐폴딩 코치 ({question_id} · {job_title})**\n\n{ai_text}"
             raise RuntimeError(f"HTTP {xhr.status}")
         except ImportError:
             req = urllib.request.Request(
@@ -1035,32 +1080,35 @@ def get_ai_scaffolding_hint(question_id: str, job_title: str, skill: str, curren
             with urllib.request.urlopen(req, timeout=8) as resp:
                 resp_data = json.loads(resp.read().decode("utf-8"))
                 ai_text = resp_data["choices"][0]["message"]["content"].strip()
-                return f"🤖 **[AI 스캐폴딩 코치 | {question_id} · {job_title}]**\n\n{ai_text}"
+                return f"**AI 스캐폴딩 코치 ({question_id} · {job_title})**\n\n{ai_text}"
     except Exception:
         user_context = (
-            f"현재 작성하신 내용('{current_answer[:35]}...')에서 한 걸음 더 나아가 볼까요?"
+            f"작성 중인 내용('{current_answer[:35]}...')에서 한 단계 더 구체화해 보세요."
             if current_answer.strip()
-            else "아직 작성을 시작하기 전이시군요! 완벽한 문장이 아니어도 괜찮으니 작은 키워드부터 적어보세요."
+            else "작은 키워드나 경험부터 가볍게 적어보세요."
         )
         return (
-            f"🤖 **[AI 스캐폴딩 가이드 | {question_id} · {job_title} - {skill}]**\n\n"
-            f"- **문항 핵심 초점:** {question_ai_prompt or base_hint}\n"
-            f"- **직무 업무 연결:** `{job_title}` 직무는 *'{job_task}'* 업무를 수행합니다.\n"
-            f"- **맞춤 성찰 질문:** {user_context}"
+            f"**AI 스캐폴딩 가이드 ({question_id} · {job_title} - {skill})**\n\n"
+            f"- **핵심 초점:** {question_ai_prompt or base_hint}\n"
+            f"- **대표 업무:** {job_title} 직무는 '{job_task}' 업무를 수행합니다.\n"
+            f"- **성찰 질문:** {user_context}"
         )
 
 
 def render_question_block(qid: str, disabled: bool = False):
     """질문 텍스트 영역 + 빠른 시작 칩(Chip) + (Q03·Q04·Q09·Q10 한정 AI 힌트) Expander 렌더링"""
     q = CFG["questions"][qid]
-    req_badge = " *(필수)*" if q["required"] else " *(선택)*"
-    st.markdown(f"#### {qid} · {q['label']}{req_badge}")
+    req_badge = "" if q["required"] else "<span class='req-badge'>선택</span>"
+    st.markdown(
+        f"<h4 style='margin-bottom:0.2rem;'>{qid} · {q['label']}{req_badge}</h4>",
+        unsafe_allow_html=True,
+    )
     st.caption(q["prompt"])
 
-    # example.html의 빠른 시작 칩(Question Chip) 기능 제공
+    # 빠른 시작 키워드 칩
     chips = CFG.get("question_chips", {}).get(qid, [])
     if chips and not disabled:
-        st.caption("👇 키워드를 클릭해 답변 시작하기 (클릭 후 자유롭게 수정 가능)")
+        st.caption("키워드를 눌러 답변을 빠르게 시작할 수 있습니다.")
         chip_cols = st.columns(len(chips))
         for idx, chip_text in enumerate(chips):
             with chip_cols[idx]:
@@ -1085,17 +1133,22 @@ def render_question_block(qid: str, disabled: bool = False):
         st.session_state.answers[qid] = new_val
 
     supports_ai = bool(q.get("ai_prompt"))
-    expander_label = "💡 힌트 및 AI 스캐폴딩 도움말 보기" if supports_ai else "💡 기본 힌트 보기"
+    expander_label = "힌트 및 AI 스캐폴딩 도움말" if supports_ai else "기본 힌트 보기"
 
     with st.expander(expander_label):
         st.info(f"**기본 힌트:** {q['default_hint']}")
         if supports_ai:
             api_key = st.session_state.get("openai_api_key", "").strip()
             if not api_key:
-                st.caption("ℹ️ 현재 **기본 힌트 모드**로 설정되어 있습니다. (Q03·Q04·Q09·Q10 문항에서 AI 맞춤 힌트를 원하시면 시작 화면이나 사이드바에서 OpenAI API Key를 입력해 주세요.)")
+                st.caption("현재 기본 힌트 모드입니다. AI 힌트는 시작 화면 또는 사이드바에서 OpenAI API Key를 입력하면 사용할 수 있습니다.")
             else:
-                if st.button("🤖 AI 맞춤 스캐폴딩 힌트 받아오기", key=f"ai_btn_{qid}", disabled=disabled):
-                    with st.spinner("AI 스캐폴딩 코치가 맞춤 질문을 생성하고 있습니다..."):
+                if st.button(
+                    "AI 맞춤 스캐폴딩 힌트 받기",
+                    key=f"ai_btn_{qid}",
+                    icon=":material/auto_awesome:",
+                    disabled=disabled,
+                ):
+                    with st.spinner("맞춤 질문을 생성하고 있습니다..."):
                         st.session_state.ai_hints[qid] = get_ai_scaffolding_hint(
                             question_id=qid,
                             job_title=st.session_state.job_title,
@@ -1213,18 +1266,18 @@ def validate_current_step(step: int) -> tuple[bool, str]:
     return True, ""
 
 
-def render_navigation(prev_label="← 이전 단계", next_label="다음 단계 →", show_prev=True, show_next=True):
+def render_navigation(prev_label="이전 단계", next_label="다음 단계", show_prev=True, show_next=True):
     """하단 이전/다음 단계 이동 버튼 렌더링"""
     st.divider()
     col1, col2 = st.columns([1, 1])
     with col1:
         if show_prev and st.session_state.step > 0:
-            if st.button(prev_label, use_container_width=True):
+            if st.button(prev_label, icon=":material/arrow_back:", use_container_width=True):
                 st.session_state.step -= 1
                 st.rerun()
     with col2:
         if show_next and st.session_state.step < 7:
-            if st.button(next_label, type="primary", use_container_width=True):
+            if st.button(next_label, icon=":material/arrow_forward:", type="primary", use_container_width=True):
                 ok, err_msg = validate_current_step(st.session_state.step)
                 if ok:
                     st.session_state.step += 1
@@ -1242,64 +1295,66 @@ def render_navigation(prev_label="← 이전 단계", next_label="다음 단계 
 # ==============================================================================
 def render_sidebar():
     with st.sidebar:
-
         # 진행률 표시 (0~7단계)
         current_step = st.session_state.step
         max_step = max(st.session_state.get("max_step", 0), current_step)
         st.session_state.max_step = max_step
         progress_ratio = min(1.0, max(0.0, current_step / 7.0))
-        st.progress(progress_ratio, text=f"진행률: {int(progress_ratio * 100)}% ({current_step}/7 단계)")
+        st.progress(progress_ratio, text=f"진행률 {int(progress_ratio * 100)}% ({current_step}/7 단계)")
 
-        st.markdown("#### 🧭 단계 네비게이션")
+        st.markdown("#### 단계 네비게이션")
         for s in CFG["steps"]:
             idx = s["step"]
             title_text = f"S{idx}. {s['name']}"
             if idx == current_step:
                 st.button(
-                    f"👉 {title_text}",
+                    title_text,
                     key=f"nav_btn_{idx}",
+                    icon=":material/arrow_forward:",
                     type="primary",
                     use_container_width=True,
                 )
             elif idx <= max_step:
                 if st.button(
-                    f"✅ {title_text}",
+                    title_text,
                     key=f"nav_btn_{idx}",
+                    icon=":material/check_circle:",
                     use_container_width=True,
                 ):
                     st.session_state.step = idx
                     st.rerun()
             else:
                 st.button(
-                    f"🔒 {title_text}",
+                    title_text,
                     key=f"nav_btn_{idx}",
+                    icon=":material/lock:",
                     disabled=True,
                     use_container_width=True,
                 )
-        st.caption("🔒 다음 단계는 필수 항목 입력 후 열립니다.")
+        st.caption("필수 항목을 입력하면 다음 단계가 열립니다.")
 
         st.divider()
-        st.markdown("#### 🔑 힌트 모드 및 API Key 설정")
+        st.markdown("#### 힌트 모드 및 API Key")
         api_key_input = st.text_input(
             "OpenAI API Key",
             value=st.session_state.openai_api_key,
             type="password",
             placeholder="sk-... (미입력 시 기본 힌트)",
-            help="API 키를 입력하면 핵심 문항(Q03·Q04·Q09·Q10)에서 AI 맞춤 스캐폴딩 힌트가 활성화되며, 비워두면 기본 힌트로 동작합니다.",
+            help="API 키 입력 시 Q03·Q04·Q09·Q10에서 AI 맞춤 힌트를 사용할 수 있습니다.",
         )
         st.session_state.openai_api_key = api_key_input.strip()
         st.session_state.hint_mode = "ai" if st.session_state.openai_api_key else "default"
         if st.session_state.hint_mode == "ai":
-            st.success("AI 스캐폴딩 힌트 모드 활성화됨")
+            st.success("AI 스캐폴딩 힌트 활성화")
         else:
-            st.caption("기본 힌트 모드로 동작 중 (API Key 미입력)")
+            st.caption("기본 힌트 모드로 동작 중")
 
         if st.session_state.job_title and st.session_state.skill:
             st.divider()
             st.markdown("#### 현재 선택 정보")
-            st.caption(f"**분류:** {st.session_state.job_category}")
-            st.caption(f"**직무:** {st.session_state.job_title}")
-            st.caption(f"**집중 역량:** {st.session_state.skill}")
+            st.caption(f"분류: {st.session_state.job_category}")
+            st.caption(f"직무: {st.session_state.job_title}")
+            st.caption(f"집중 역량: {st.session_state.skill}")
 
 
 # ==============================================================================
@@ -1308,48 +1363,43 @@ def render_sidebar():
 def render_s00():
     st.caption("STEP 0 / 7 · 도입")
     st.title("내가 직접 만드는 4주 진로 학습 계획")
-    st.markdown(
-        "관심 직무의 핵심 역량과 나의 현재 수준을 비교하며, **작고 구체적인 실행 계획**을 스스로 완성하는 연습 공간입니다."
-    )
+    st.markdown("관심 직무의 핵심 역량과 현재 수준을 비교해 실행 가능한 학습 계획을 세웁니다.")
 
     st.info(
         "**학습 흐름 (8단계)**\n\n"
-        "① 직무 및 역량 선택 → ② 경험·현재 수준 점검 → ③ 역량 차이 및 목표 설정 → "
-        "④ 학습 계획 수립 및 캘린더 → ⑤ 계획 검토 및 완성 → ⑥ 독립 수행 미션 → ⑦ 완료 및 내보내기"
+        "1. 직무·역량 선택 → 2. 경험 점검 → 3. 역량 비교·목표 설정 → "
+        "4. 학습 계획·캘린더 → 5. 계획 검토 → 6. 독립 수행 미션 → 7. 완료·내보내기"
     )
 
     c1, c2, c3 = st.columns(3)
     with c1:
-        st.markdown("##### 🧩 필요한 것만 한 단계씩\n질문과 스캐폴딩 힌트를 따라 막막함을 줄이고 생각을 구체화합니다.")
+        st.markdown("##### 단계별 사고 확장")
+        st.caption("질문과 힌트를 따라 생각을 구체화합니다.")
     with c2:
-        st.markdown("##### 📊 2025 직업공통능력 DB\n희망 직무의 핵심 하위능력요소와 실제 업무 맥락을 기준으로 점검합니다.")
+        st.markdown("##### 직업공통능력 DB")
+        st.caption("희망 직무의 핵심 역량과 대표 업무를 기준으로 점검합니다.")
     with c3:
-        st.markdown("##### 🗓️ 마지막은 혼자 계획\n스캐폴딩 없이 다른 역량의 학습 계획을 스스로 세워보며 자립성을 확인합니다.")
+        st.markdown("##### 독립 계획 연습")
+        st.caption("마지막에는 힌트 없이 새 역량의 계획을 혼자 세워봅니다.")
 
-    st.warning(
-        "💡 **안내:** 이 플랫폼은 학습자 대신 계획을 자동 작성해주지 않습니다. "
-        "질문과 힌트를 발판 삼아 나만의 언어로 직접 계획을 완성해 보세요."
-    )
+    st.warning("이 플랫폼은 계획을 대신 써주지 않습니다. 질문에 답하며 스스로 계획을 완성해 보세요.")
 
     st.divider()
     st.subheader("시작 전 힌트 방식 설정")
-    st.caption(
-        "핵심 문항(Q03·Q04 현재 수준 점검, Q09·Q10 학습 활동·일정 수립)에서 **AI 스캐폴딩의 도움**을 받고 싶다면 아래에 OpenAI API Key를 입력해 주세요. "
-        "키가 없거나 입력하지 않고 시작하면 자동으로 **기본 힌트 모드**로 설정됩니다."
-    )
+    st.caption("Q03·Q04·Q09·Q10 문항에서 AI 힌트를 받으려면 OpenAI API Key를 입력하세요. 비워두면 기본 힌트로 진행됩니다.")
 
     with st.form("s00_onboarding_form"):
         s00_key_input = st.text_input(
-            "OpenAI API Key (선택사항)",
+            "OpenAI API Key (선택)",
             value=st.session_state.openai_api_key,
             type="password",
-            placeholder="sk-... (입력하지 않으면 기본 힌트로 진행됩니다)",
+            placeholder="sk-... (미입력 시 기본 힌트)",
         )
         col_btn1, col_btn2 = st.columns([1, 1])
         with col_btn1:
-            save_only = st.form_submit_button("힌트 설정만 저장", use_container_width=True)
+            save_only = st.form_submit_button("설정만 저장", icon=":material/save:", use_container_width=True)
         with col_btn2:
-            start_now = st.form_submit_button("설정 적용 후 시작하기 →", type="primary", use_container_width=True)
+            start_now = st.form_submit_button("시작하기", icon=":material/arrow_forward:", type="primary", use_container_width=True)
 
         if save_only or start_now:
             clean_key = s00_key_input.strip()
@@ -1361,28 +1411,27 @@ def render_s00():
                 st.rerun()
             else:
                 if clean_key:
-                    st.success("🤖 OpenAI API Key가 등록되어 **AI 스캐폴딩 힌트 모드**로 설정되었습니다.")
+                    st.success("AI 스캐폴딩 힌트 모드로 설정되었습니다.")
                 else:
-                    st.info("💡 API Key가 입력되지 않아 **기본 힌트 모드**로 설정되었습니다.")
+                    st.info("기본 힌트 모드로 설정되었습니다.")
 
 
 def render_s01():
     st.caption("STEP 1 / 7 · 직무 및 역량 선택")
     st.title("어떤 직무와 역량부터 시작할까요?")
-    st.markdown("희망하는 **직무 대분류**와 **세부 직무**를 선택한 뒤, 이번 4주 동안 집중할 **핵심 역량 요소** 하나를 골라주세요.")
+    st.markdown("희망 직무를 고른 뒤, 이번 4주 동안 집중할 핵심 역량 하나를 선택하세요.")
 
     categories = list(CFG["jobs_db"].keys())
     default_cat_idx = categories.index(st.session_state.job_category) if st.session_state.job_category in categories else 0
 
     col1, col2 = st.columns(2)
     with col1:
-        selected_cat = st.selectbox("1️⃣ 직무 대분류 선택", options=categories, index=default_cat_idx)
+        selected_cat = st.selectbox("1. 직무 대분류", options=categories, index=default_cat_idx)
     with col2:
         jobs_in_cat = list(CFG["jobs_db"][selected_cat].keys())
         default_job_idx = jobs_in_cat.index(st.session_state.job_title) if st.session_state.job_title in jobs_in_cat else 0
-        selected_job = st.selectbox("2️⃣ 세부 직무 선택", options=jobs_in_cat, index=default_job_idx)
+        selected_job = st.selectbox("2. 세부 직무", options=jobs_in_cat, index=default_job_idx)
 
-    # 직무 변경 시 기존 역량 선택 유효성 갱신
     job_data = CFG["jobs_db"][selected_cat][selected_job]
     skills_list = job_data["skills"]
 
@@ -1395,10 +1444,9 @@ def render_s01():
     if st.session_state.skill not in skills_list:
         st.session_state.skill = skills_list[0]
 
-    st.info(f"📋 **[{selected_job}] 선정 근거가 된 대표 업무**\n\n> {job_data['task']}")
+    st.info(f"**{selected_job} 대표 업무**\n\n{job_data['task']}")
 
-    st.markdown("#### 3️⃣ 집중 학습할 핵심 역량 요소 선택 (1개)")
-    st.caption("아래 직무 핵심 요소 중 이번 계획에서 가장 먼저 다뤄보고 싶은 역량 하나를 선택하세요.")
+    st.markdown("#### 3. 집중 학습할 핵심 역량 (1개 선택)")
 
     selected_skill = st.radio(
         "핵심 역량 요소",
@@ -1408,21 +1456,24 @@ def render_s01():
     )
     st.session_state.skill = selected_skill
 
-    # 카드 형태로 선택된 역량 요약 표시
-    st.success(f"✅ **선택한 핵심 역량:** `{st.session_state.skill}`")
+    st.success(f"**선택한 핵심 역량:** {st.session_state.skill}")
 
-    render_navigation(next_label="내 현재 수준 확인 →")
+    render_navigation(next_label="현재 수준 확인")
 
 
 def render_s02():
     st.caption("STEP 2 / 7 · 경험 및 현재 수준 점검")
     st.title("내가 할 수 있는 일은 무엇일까요?")
-    st.markdown(f"**선택 직무:** `{st.session_state.job_title}` · **집중 역량:** `{st.session_state.skill}`")
+    st.markdown(
+        f"<div class='muted-meta'><strong>선택 직무:</strong> {st.session_state.job_title} · "
+        f"<strong>집중 역량:</strong> {st.session_state.skill}</div>",
+        unsafe_allow_html=True,
+    )
 
-    st.info("화려한 실무 경험이 없어도 괜찮습니다. 수업, 동아리, 개인 과제에서의 작은 경험을 떠올려 보고, 없다면 체크박스를 선택하세요.")
+    st.info("수업, 동아리, 개인 과제 등 작은 경험도 좋습니다. 관련 경험이 없다면 아래 항목을 체크하세요.")
 
     no_exp = st.checkbox(
-        "관련 경험이 아직 없어요 (체크 시 Q01·Q02 생략 가능)",
+        "관련 경험이 아직 없어요 (Q01·Q02 생략)",
         value=st.session_state.no_experience,
     )
     if no_exp != st.session_state.no_experience:
@@ -1438,28 +1489,28 @@ def render_s02():
     render_question_block("Q03", disabled=False)
     render_question_block("Q04", disabled=False)
 
-    render_navigation(next_label="역량 비교하기 →")
+    render_navigation(next_label="역량 비교하기")
 
 
 def render_s03():
     st.caption("STEP 3 / 7 · 역량 차이 및 목표 설정")
     st.title("내 현재 역량과 목표를 비교해요")
-    st.markdown(f"**선택 직무:** `{st.session_state.job_title}` · **집중 역량:** `{st.session_state.skill}`")
+    st.markdown(
+        f"<div class='muted-meta'><strong>선택 직무:</strong> {st.session_state.job_title} · "
+        f"<strong>집중 역량:</strong> {st.session_state.skill}</div>",
+        unsafe_allow_html=True,
+    )
 
     job_data = CFG["jobs_db"][st.session_state.job_category][st.session_state.job_title]
     skills_list = job_data["skills"]
     target_level = 80  # 시연용 기준 목표치 (80%)
 
-    st.info(
-        "**직무 요구 역량과 나의 현재 수준 비교**\n\n"
-        "각 슬라이더로 본인이 느끼는 현재 수행 수준(0~100%)을 평가해 보세요. "
-        f"시연용 목표 수준({target_level}%)은 자기점검을 돕기 위한 참조 기준입니다."
-    )
+    st.info(f"현재 수행 수준(0~100%)을 평가하세요. 시연용 목표({target_level}%)는 자기점검 기준입니다.")
 
     for sk in skills_list:
         is_main = sk == st.session_state.skill
         current_score = st.session_state.scores.get(sk, 50)
-        label_prefix = "🎯 [집중 역량] " if is_main else "• "
+        label_prefix = "[집중 역량] " if is_main else ""
         score_val = st.slider(
             f"{label_prefix}{sk}",
             min_value=0,
@@ -1470,9 +1521,8 @@ def render_s03():
         )
         st.session_state.scores[sk] = score_val
         gap = max(0, target_level - score_val)
-        st.caption(f"나의 수준: **{score_val}%** | 시연용 목표: **{target_level}%** | 차이(Gap): **{gap}%p**")
+        st.caption(f"현재 {score_val}% · 목표 {target_level}% · 차이 {gap}%p")
 
-    # 요약 메트릭 표시 (example.html compare-summary 반영)
     main_score = st.session_state.scores.get(st.session_state.skill, 50)
     avg_score = int(round(sum(st.session_state.scores.get(s, 50) for s in skills_list) / len(skills_list)))
     main_gap = max(0, target_level - main_score)
@@ -1486,49 +1536,51 @@ def render_s03():
     for qid in ["Q05", "Q06", "Q07", "Q08"]:
         render_question_block(qid)
 
-    render_navigation(next_label="실행 계획 세우기 →")
+    render_navigation(next_label="실행 계획 세우기")
 
 
 def render_s04():
     st.caption("STEP 4 / 7 · 학습 계획 수립 및 캘린더")
     st.title("실천할 수 있는 계획을 작성해요")
-    st.markdown(f"**선택 직무:** `{st.session_state.job_title}` · **집중 역량:** `{st.session_state.skill}`")
+    st.markdown(
+        f"<div class='muted-meta'><strong>선택 직무:</strong> {st.session_state.job_title} · "
+        f"<strong>집중 역량:</strong> {st.session_state.skill}</div>",
+        unsafe_allow_html=True,
+    )
 
-    st.info("**계획의 기준:** 단순 자료 읽기만이 아니라 직접 수행할 행동, 만들 결과물, 실행할 날짜를 구체화해 보세요.")
+    st.info("직접 수행할 행동, 결과물, 실행 날짜를 구체화하세요.")
 
     render_question_block("Q09")
     render_question_block("Q10")
 
-    # example.html의 추천 학습 자료 카탈로그 표시 (Q11 상단)
-    st.markdown("##### 📚 탐색을 돕는 추천 참고 자료 및 현직자 연결")
+    st.markdown("##### 추천 참고 자료 및 현직자 연결")
     res_cols = st.columns(len(CFG["resource_catalog"]))
     for idx, res in enumerate(CFG["resource_catalog"]):
         with res_cols[idx]:
             st.markdown(
                 f"**{res['name']}**\n\n"
-                f"<small>{res['desc']}</small>\n\n"
-                f"[사이트 열기 ↗]({res['url']})",
+                f"<small style='color:#64748b;'>{res['desc']}</small>",
                 unsafe_allow_html=True,
             )
+            st.link_button("사이트 열기", res["url"], icon=":material/open_in_new:", use_container_width=True)
 
     render_question_block("Q11")
     render_question_block("Q12")
 
     st.divider()
     with st.container(border=True):
-        st.subheader("✨ AI 추천 대외활동")
+        st.subheader("AI 추천 대외활동")
         st.caption(
-            f"선택한 직무(`{st.session_state.job_title}`)와 역량(`{st.session_state.skill}`)을 키울 수 있는 대외활동을 탐색해 보세요. "
-            "(MVP 단계에서는 주요 대외활동 플랫폼 바로가기 링크를 제공합니다.)"
+            f"{st.session_state.job_title} 직무와 {st.session_state.skill} 역량에 맞는 대외활동을 탐색해 보세요."
         )
         act_col1, act_col2 = st.columns(2)
         with act_col1:
-            st.link_button("추천 대외활동 1 ↗", "https://career.yonsei.ac.kr/", use_container_width=True)
+            st.link_button("커리어연세 바로가기", "https://career.yonsei.ac.kr/", icon=":material/open_in_new:", use_container_width=True)
         with act_col2:
-            st.link_button("추천 대외활동 2 ↗", "https://linkareer.com/", use_container_width=True)
+            st.link_button("링커리어 바로가기", "https://linkareer.com/", icon=":material/open_in_new:", use_container_width=True)
 
-    st.subheader("🗓️ 캘린더에 실행 일정 추가하기")
-    st.caption("계획한 학습 활동을 실제 날짜와 시간(분)으로 등록해 보세요. 완료 단계에서 `.ics` 캘린더 파일로 내려받을 수 있습니다.")
+    st.subheader("캘린더에 실행 일정 추가하기")
+    st.caption("학습 일정을 등록하면 완료 단계에서 캘린더 파일(.ics)로 저장할 수 있습니다.")
 
     with st.form("add_calendar_event_form", clear_on_submit=True):
         c1, c2, c3, c4 = st.columns([2.2, 1.3, 1.0, 1.0])
@@ -1540,7 +1592,7 @@ def render_s04():
             ev_min = st.number_input("시간(분)", min_value=10, max_value=600, value=30, step=10)
         with c4:
             st.markdown("<br>", unsafe_allow_html=True)
-            submitted = st.form_submit_button("일정 추가 +", use_container_width=True)
+            submitted = st.form_submit_button("일정 추가", icon=":material/add:", use_container_width=True)
 
         if submitted:
             if not ev_title.strip():
@@ -1575,21 +1627,21 @@ def render_s04():
                 label_visibility="collapsed",
             )
         with del_col2:
-            if st.button("선택 일정 삭제", use_container_width=True):
+            if st.button("선택 일정 삭제", icon=":material/delete:", use_container_width=True):
                 st.session_state.events = [e for e in st.session_state.events if e["id"] != del_target]
                 st.rerun()
     else:
-        st.caption("아직 등록된 학습 일정이 없습니다. 위 입력란에서 일정을 추가해 보세요.")
+        st.caption("등록된 일정이 없습니다.")
 
-    render_navigation(next_label="계획 검토하기 →")
+    render_navigation(next_label="계획 검토하기")
 
 
 def render_s05():
     st.caption("STEP 5 / 7 · 계획 검토 및 완성")
     st.title("내가 세운 계획을 검토해요")
-    st.markdown("지금까지 작성한 답변을 한눈에 모았습니다. 수정이 필요하면 이전 단계로 돌아가 언제든 고칠 수 있습니다.")
+    st.markdown("작성한 답변을 확인하고, 필요하면 이전 단계에서 수정하세요.")
 
-    st.subheader("📋 작성한 계획 요약")
+    st.subheader("작성한 계획 요약")
     summary_qids = ["Q01", "Q02", "Q03", "Q04", "Q05", "Q06", "Q07", "Q08", "Q09", "Q10", "Q11", "Q12"]
     for qid in summary_qids:
         if st.session_state.no_experience and qid in ["Q01", "Q02"]:
@@ -1601,8 +1653,8 @@ def render_s05():
     st.markdown(f"- **등록한 캘린더 일정:** 총 {len(st.session_state.events)}개")
 
     st.divider()
-    st.subheader("✅ 실행 가능성 5가지 자가 점검 체크리스트")
-    st.caption("자동 채점이 아니라 학습자 스스로의 점검입니다.")
+    st.subheader("실행 가능성 자가 점검")
+    st.caption("스스로 점검하는 체크리스트입니다.")
     for idx, item_text in enumerate(CFG["review_checklist"]):
         checked = st.checkbox(
             item_text,
@@ -1615,15 +1667,14 @@ def render_s05():
     render_question_block("Q13")
     render_question_block("Q14")
 
-    render_navigation(next_label="새로운 역량 혼자 계획하기 →")
+    render_navigation(next_label="새로운 역량 혼자 계획하기")
 
 
 def render_s06():
     st.caption("STEP 6 / 7 · 독립 수행 미션")
     st.title("이제 도움 없이 새 역량을 계획해 보세요")
     st.warning(
-        f"앞서 연습한 집중 역량(**{st.session_state.skill}**)을 제외한 다른 핵심 요소를 하나 선택하고, "
-        "길잡이 질문이나 AI 힌트 없이 스스로 4주 학습 계획을 세워 보세요."
+        f"앞서 연습한 {st.session_state.skill} 외의 다른 역량을 선택해, 힌트 없이 혼자 계획을 세워 보세요."
     )
 
     job_data = CFG["jobs_db"][st.session_state.job_category][st.session_state.job_title]
@@ -1648,7 +1699,7 @@ def render_s06():
     st.divider()
     for field in CFG["assessment_fields"]:
         fid = field["id"]
-        st.markdown(f"#### {field['label']} *(필수)*")
+        st.markdown(f"#### {field['label']}")
         val = st.text_area(
             label=field["label"],
             value=st.session_state.ind_answers.get(fid, ""),
@@ -1659,34 +1710,35 @@ def render_s06():
         )
         st.session_state.ind_answers[fid] = val
 
-    render_navigation(next_label="독립 미션 완료 →")
+    render_navigation(next_label="독립 미션 완료")
 
 
 def render_s07():
     st.caption("STEP 7 / 7 · 완료 및 내보내기")
-    st.title("🎉 나만의 진로 학습 계획을 완성했어요!")
-    st.markdown("첫 번째 핵심 역량을 스캐폴딩과 함께 설계하고, 두 번째 역량에 스스로 적용해 보았습니다.")
+    st.title("나만의 진로 학습 계획을 완성했어요")
+    st.markdown("첫 번째 핵심 역량을 설계하고, 두 번째 역량에 스스로 적용해 보았습니다.")
 
     st.success(
         f"**최종 완료 요약**\n\n"
         f"- **희망 직무:** {st.session_state.job_category} › {st.session_state.job_title}\n"
-        f"- **첫 번째 집중 역량:** {st.session_state.skill}\n"
-        f"- **4주 핵심 목표 (Q07):** {st.session_state.answers.get('Q07', '(미입력)')}\n"
-        f"- **오늘/내일 첫 행동 (Q13):** {st.session_state.answers.get('Q13', '(미입력)')}\n"
-        f"- **독립 수행 미션 역량:** {st.session_state.ind_skill or '(미선택)'}\n"
-        f"- **등록한 캘린더 일정:** {len(st.session_state.events)}개"
+        f"- **집중 역량:** {st.session_state.skill}\n"
+        f"- **4주 목표 (Q07):** {st.session_state.answers.get('Q07', '(미입력)')}\n"
+        f"- **첫 행동 (Q13):** {st.session_state.answers.get('Q13', '(미입력)')}\n"
+        f"- **독립 미션 역량:** {st.session_state.ind_skill or '(미선택)'}\n"
+        f"- **등록한 일정:** {len(st.session_state.events)}개"
     )
 
-    st.subheader("📥 결과 파일 내보내기")
+    st.subheader("결과 파일 내보내기")
     col1, col2, col3 = st.columns(3)
 
     with col1:
         json_data = build_json_export()
         st.download_button(
-            label="📄 답변 및 계획 JSON 다운로드",
+            label="계획 JSON 다운로드",
             data=json_data.encode("utf-8"),
             file_name=f"pathfinder_학습계획_{st.session_state.job_title}.json",
             mime="application/json",
+            icon=":material/download:",
             type="primary",
             use_container_width=True,
         )
@@ -1695,23 +1747,29 @@ def render_s07():
         if st.session_state.events:
             ics_data = build_ics_content(st.session_state.events)
             st.download_button(
-                label="🗓️ 학습 일정(.ics) 다운로드",
+                label="학습 일정(.ics) 다운로드",
                 data=ics_data.encode("utf-8"),
                 file_name="pathfinder_학습일정.ics",
                 mime="text/calendar",
+                icon=":material/calendar_month:",
                 use_container_width=True,
             )
         else:
-            st.button("🗓️ 학습 일정(.ics) 다운로드 (등록 일정 없음)", disabled=True, use_container_width=True)
+            st.button(
+                "학습 일정(.ics) 다운로드",
+                icon=":material/calendar_month:",
+                disabled=True,
+                use_container_width=True,
+            )
 
     with col3:
-        if st.button("🔄 처음부터 다시 시작", use_container_width=True):
+        if st.button("처음부터 다시 시작", icon=":material/refresh:", use_container_width=True):
             reset_all_state()
             st.rerun()
 
     st.divider()
-    with st.expander("📊 학습 계획 평가 루브릭 (자가 점검 및 팀원 피드백 기준표) 보기"):
-        st.caption("본 루브릭은 수립한 학습 계획의 구체성과 실행 가능성을 점검하기 위한 참조 기준입니다.")
+    with st.expander("학습 계획 평가 루브릭 보기"):
+        st.caption("학습 계획의 구체성과 실행 가능성을 점검하기 위한 기준표입니다.")
         st.dataframe(pd.DataFrame(CFG["rubric"]), use_container_width=True, hide_index=True)
 
     render_navigation(show_prev=True, show_next=False)
@@ -1723,9 +1781,10 @@ def render_s07():
 def main():
     st.set_page_config(
         page_title="진로 스캐폴딩 플랫폼",
-        page_icon="🧭",
+        page_icon=":material/explore:",
         layout="wide",
     )
+    inject_design_styles()
     init_session_state()
     render_sidebar()
 

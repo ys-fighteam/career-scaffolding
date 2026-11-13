@@ -1,3 +1,5 @@
+# PATHFINDER v7: learner-guided practice; no formal post-test or rubric comparison
+# PATHFINDER v5.2 ADDITIVE: 기존 기능 유지, 새 목표/경험 점검 추가
 import json
 import uuid
 import calendar as pycalendar
@@ -7,6 +9,8 @@ from datetime import datetime, date, timedelta
 import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
+from pathfinder_enhancements_v52 import (render_goal_level, get_goal_level, render_experience_review, additional_exports)
+from pathfinder_guidance_v7 import (render_example_cards, render_stage_scaffold, render_linkareer_panel, render_plan_summary_cards, render_ethics_disclosure)
 
 # ==============================================================================
 # 1. 설정 및 직무별 핵심 하위능력요소 DB (CFG)
@@ -622,7 +626,7 @@ CFG = {
         {"step": 3, "id": "S03", "name": "역량 차이 및 목표 설정", "title": "내 현재 역량과 목표를 비교해요"},
         {"step": 4, "id": "S04", "name": "학습 계획 수립 및 캘린더", "title": "실천할 수 있는 계획을 작성해요"},
         {"step": 5, "id": "S05", "name": "계획 검토 및 완성", "title": "내가 세운 계획을 검토해요"},
-        {"step": 6, "id": "S06", "name": "독립 수행 미션", "title": "이제 도움 없이 새 역량을 계획해 보세요"},
+        {"step": 6, "id": "S06", "name": "다음 역량 연습", "title": "다른 역량도 계획해 볼까요? (선택)"},
         {"step": 7, "id": "S07", "name": "완료 및 내보내기", "title": "나만의 계획을 완성했어요"},
     ],
     "questions": {
@@ -660,8 +664,8 @@ CFG = {
         },
         "Q05": {
             "screen": "S03",
-            "label": "직무 요구 역량과 비교",
-            "prompt": "직무 핵심 역량의 자기평가와 시연용 목표 수준(80%)을 비교한 뒤, 특히 보완하고 싶은 지점을 한 문장으로 적어보세요.",
+            "label": "이번 달 우선 보완할 역량",
+            "prompt": "지금 가장 어려운 점 중 이번 달에 우선 개선할 행동 한 가지와 그 이유는 무엇인가요?",
             "required": True,
             "placeholder": "예: 문제를 발견하는 것은 가능하지만, 데이터를 근거로 원인을 구조화하는 부분이 부족해요.",
             "default_hint": "선택한 직무의 '선정 근거가 된 업무'를 보며 현재 내 수준과 가장 차이가 큰 부분을 찾아보세요.",
@@ -676,8 +680,8 @@ CFG = {
         },
         "Q07": {
             "screen": "S03",
-            "label": "4주 학습 목표",
-            "prompt": "4주 후에 지금보다 구체적으로 어떤 일을 할 수 있게 되고 싶나요?",
+            "label": "4주 목표와 완료 기준",
+            "prompt": "4주 후 어떤 일을 직접 수행하고, 어떤 결과물이나 기준으로 목표 달성을 확인하고 싶나요?",
             "required": True,
             "placeholder": "예: 관심 도메인 사례 3건을 분석해 문제 정의서 1쪽과 대안 비교표를 작성한다.",
             "default_hint": "'열심히 공부하기' 대신 '직접 수행할 행동 + 눈으로 확인할 수 있는 결과물'로 적어보세요.",
@@ -749,7 +753,7 @@ CFG = {
     "assessment_fields": [
         {
             "id": "ind_gap",
-            "label": "1. 필요 역량과 나의 현재 수준",
+            "label": "1. 나의 현재 역량과 보완할 점",
             "placeholder": "선택한 역량에서 필요한 일과 현재 나의 수준을 적어 주세요.",
         },
         {
@@ -797,7 +801,7 @@ CFG = {
     ],
     "rubric": [
         {
-            "평가 영역": "역량 분석",
+            "평가 영역": "나의 현재 역량과 보완할 점",
             "0점 (미흡)": "직무 요구 역량 또는 현재 수준을 제시하지 못함",
             "1점 (보통)": "둘 다 언급하지만 차이나 근거가 불명확함",
             "2점 (우수)": "요구 역량과 현재 수행 수준을 근거와 함께 비교함",
@@ -831,6 +835,11 @@ CFG = {
 
 
 # ==============================================================================
+# PATHFINDER learner-defined marketing practice topic
+_marketing_skills = CFG["jobs_db"]["마케팅·영업·상품"]["마케팅·홍보"]["skills"]
+if "시연용 추가 역량 › 생성형 AI 활용" not in _marketing_skills:
+    _marketing_skills.append("시연용 추가 역량 › 생성형 AI 활용")
+
 # 2. 세션 상태(st.session_state) 초기화 및 헬퍼 함수
 # ==============================================================================
 def init_session_state():
@@ -1047,6 +1056,11 @@ def render_question_block(qid: str, disabled: bool = False):
                     )
             if qid in st.session_state.ai_hints:
                 st.success(st.session_state.ai_hints[qid])
+                st.radio('이 피드백을 어떻게 활용할까요?',
+                    ['참고해서 직접 수정할래요','현재 내 답변을 유지할래요','다른 관점으로 다시 생각해 볼래요'],
+                    horizontal=True,key=f'v52_feedback_choice_{qid}')
+                st.caption('AI 제안을 따르지 않아도 됩니다. 수정·유지·재요청을 선택할 수 있으며 최종 판단은 학습자에게 있습니다.')
+    render_stage_scaffold(st, st.session_state, CFG, qid)
 
 
 def build_ics_content(events: list) -> str:
@@ -1109,6 +1123,11 @@ def build_json_export() -> str:
         "answers": st.session_state.answers,
         "calendar_events": st.session_state.events,
         "review_checks": st.session_state.review_checks,
+        "goal_levels_v52": st.session_state.get("goal_levels_v52", {}),
+        "practice_next_skill_v7": st.session_state.get("practice_next_skill_v7", False),
+        "linkareer_activity_v7": {"url": st.session_state.get("saved_activity_url_v7", ""), "reason": st.session_state.get("saved_activity_reason_v7", "")},
+        "goal_descriptions_v52": st.session_state.get("goal_descriptions_v52", {}),
+        "experience_reflection_v52": st.session_state.get("experience_reflection_v52", {}),
         "independent_mission": {
             "ind_skill": st.session_state.ind_skill,
             "ind_answers": st.session_state.ind_answers,
@@ -1131,7 +1150,7 @@ def validate_current_step(step: int) -> tuple[bool, str]:
                 return False, f"{qid} ({CFG['questions'][qid]['label']}) 내용을 입력해 주세요."
 
     elif step == 3:
-        for qid in ["Q05", "Q06", "Q07", "Q08"]:
+        for qid in ["Q05", "Q07"]:
             if not st.session_state.answers.get(qid, "").strip():
                 return False, f"{qid} ({CFG['questions'][qid]['label']}) 내용을 입력해 주세요."
 
@@ -1145,12 +1164,7 @@ def validate_current_step(step: int) -> tuple[bool, str]:
             return False, "Q13 (첫 행동) 내용을 입력해 주세요."
 
     elif step == 6:
-        if not st.session_state.ind_skill:
-            return False, "독립 수행 미션에서 연습할 다른 핵심 역량을 선택해 주세요."
-        for field in CFG["assessment_fields"]:
-            fid = field["id"]
-            if not st.session_state.ind_answers.get(fid, "").strip():
-                return False, f"독립 미션의 '{field['label']}' 항목을 작성해 주세요."
+        pass  # 선택형 추가 연습은 완료 조건이 아닙니다.
 
     return True, ""
 
@@ -1239,7 +1253,7 @@ def render_s00():
     st.info(
         "**학습 흐름 (8단계)**\n\n"
         "① 직무 및 역량 선택 → ② 경험·현재 수준 점검 → ③ 역량 차이 및 목표 설정 → "
-        "④ 학습 계획 수립 및 캘린더 → ⑤ 계획 검토 및 완성 → ⑥ 독립 수행 미션 → ⑦ 완료 및 내보내기"
+        "④ 학습 계획 수립 및 캘린더 → ⑤ 계획 검토 및 완성 → ⑥ 다음 역량 계획(선택) → ⑦ 경험 성찰 및 저장"
     )
 
     c1, c2, c3 = st.columns(3)
@@ -1248,13 +1262,15 @@ def render_s00():
     with c2:
         st.markdown("##### 📊 2025 직업공통능력 DB\n희망 직무의 핵심 하위능력요소와 실제 업무 맥락을 기준으로 점검합니다.")
     with c3:
-        st.markdown("##### 🗓️ 마지막은 혼자 계획\n스캐폴딩 없이 다른 역량의 학습 계획을 스스로 세워보며 자립성을 확인합니다.")
+        st.markdown("##### 🗓️ 마지막은 성찰과 저장\n직접 완성한 계획을 돌아보고 실행 일정과 계획서를 가져갑니다.")
 
     st.warning(
         "💡 **안내:** 이 플랫폼은 학습자 대신 계획을 자동 작성해주지 않습니다. "
         "질문과 힌트를 발판 삼아 나만의 언어로 직접 계획을 완성해 보세요."
     )
 
+    st.info("🛡️ 목표 레벨과 AI 힌트는 참고용이며, 최종 진로·학습 판단은 학습자에게 있습니다. 개인 API 키 입력 방식은 공개 서비스 배포 전에 서버 측 호출 방식으로 교체하는 것을 권장합니다.")
+    render_ethics_disclosure(st)
     st.divider()
     st.subheader("시작 전 힌트 방식 설정")
     st.caption(
@@ -1334,6 +1350,8 @@ def render_s01():
     # 카드 형태로 선택된 역량 요약 표시
     st.success(f"✅ **선택한 핵심 역량:** `{st.session_state.skill}`")
 
+    st.divider()
+    render_goal_level(st, st.session_state)
     render_navigation(next_label="내 현재 수준 확인 →")
 
 
@@ -1371,12 +1389,14 @@ def render_s03():
 
     job_data = CFG["jobs_db"][st.session_state.job_category][st.session_state.job_title]
     skills_list = job_data["skills"]
-    target_level = 80  # 시연용 기준 목표치 (80%)
+    goal_level = get_goal_level(st.session_state)
+    target_level = goal_level * 20  # 개인 설정 LEVEL의 시각화용 눈금 (객관적 직무 기준 아님)
 
     st.info(
+        f"**내가 선택한 목표: LEVEL {goal_level}/5** · 자기점검용 수치 비교 (능력 인증 아님)\n\n"
         "**직무 요구 역량과 나의 현재 수준 비교**\n\n"
         "각 슬라이더로 본인이 느끼는 현재 수행 수준(0~100%)을 평가해 보세요. "
-        f"시연용 목표 수준({target_level}%)은 자기점검을 돕기 위한 참조 기준입니다."
+        f"내가 정한 목표 수준의 참고 눈금({target_level}%)은 자기점검을 돕기 위한 참조 기준입니다."
     )
 
     for sk in skills_list:
@@ -1393,7 +1413,7 @@ def render_s03():
         )
         st.session_state.scores[sk] = score_val
         gap = max(0, target_level - score_val)
-        st.caption(f"나의 수준: **{score_val}%** | 시연용 목표: **{target_level}%** | 차이(Gap): **{gap}%p**")
+        st.caption(f"나의 수준: **{score_val}%** | 개인 목표 참고 눈금: **{target_level}%** | 차이(Gap): **{gap}%p**")
 
     # 요약 메트릭 표시 (example.html compare-summary 반영)
     main_score = st.session_state.scores.get(st.session_state.skill, 50)
@@ -1401,12 +1421,12 @@ def render_s03():
     main_gap = max(0, target_level - main_score)
 
     m1, m2, m3 = st.columns(3)
-    m1.metric("집중 역량 현재 수준", f"{main_score}%", f"목표 대비 -{main_gap}%p" if main_gap > 0 else "목표 도달")
-    m2.metric("시연용 목표 기준", f"{target_level}%", "설계 참조치")
+    m1.metric("집중 역량 현재 수준", f"{main_score}%", f"자가 목표와의 차이 -{main_gap}%p" if main_gap > 0 else "목표 도달")
+    m2.metric("개인 목표 참고 눈금 기준", f"{target_level}%", "개인 설정 기준")
     m3.metric("직무 핵심역량 평균", f"{avg_score}%", f"{len(skills_list)}개 역량 평균")
 
     st.divider()
-    for qid in ["Q05", "Q06", "Q07", "Q08"]:
+    for qid in ["Q05", "Q07"]:
         render_question_block(qid)
 
     render_navigation(next_label="실행 계획 세우기 →")
@@ -1419,8 +1439,10 @@ def render_s04():
 
     st.info("**계획의 기준:** 단순 자료 읽기만이 아니라 직접 수행할 행동, 만들 결과물, 실행할 날짜를 구체화해 보세요.")
 
+    render_example_cards(st, st.session_state, CFG)
     render_question_block("Q09")
     render_question_block("Q10")
+    render_linkareer_panel(st, st.session_state, CFG)
 
     # example.html의 추천 학습 자료 카탈로그 표시 (Q11 상단)
     st.markdown("##### 📚 탐색을 돕는 추천 참고 자료 및 현직자 연결")
@@ -1439,7 +1461,7 @@ def render_s04():
 
     st.divider()
     st.subheader("🗓️ 캘린더에 실행 일정 추가하기")
-    st.caption("계획한 학습 활동을 실제 날짜와 시간(분)으로 등록해 보세요. 완료 단계에서 `.ics` 캘린더 파일로 내려받을 수 있습니다.")
+    st.caption("먼저 **이번 주**에 실행할 활동 하나를 정해 날짜와 소요 시간(분)을 등록해 보세요. 완료 단계에서 `.ics`로 내보낼 수 있습니다.")
 
     with st.form("add_calendar_event_form", clear_on_submit=True):
         c1, c2, c3, c4 = st.columns([2.2, 1.3, 1.0, 1.0])
@@ -1500,15 +1522,8 @@ def render_s05():
     st.title("내가 세운 계획을 검토해요")
     st.markdown("지금까지 작성한 답변을 한눈에 모았습니다. 수정이 필요하면 이전 단계로 돌아가 언제든 고칠 수 있습니다.")
 
-    st.subheader("📋 작성한 계획 요약")
-    summary_qids = ["Q01", "Q02", "Q03", "Q04", "Q05", "Q06", "Q07", "Q08", "Q09", "Q10", "Q11", "Q12"]
-    for qid in summary_qids:
-        if st.session_state.no_experience and qid in ["Q01", "Q02"]:
-            continue
-        q_label = CFG["questions"][qid]["label"]
-        ans_text = st.session_state.answers.get(qid, "").strip() or "(입력 없음)"
-        st.markdown(f"- **{qid} · {q_label}:** {ans_text}")
-
+    st.subheader("📋 계획을 한눈에 보기")
+    render_plan_summary_cards(st, st.session_state)
     st.markdown(f"- **등록한 캘린더 일정:** 총 {len(st.session_state.events)}개")
 
     st.divider()
@@ -1526,57 +1541,39 @@ def render_s05():
     render_question_block("Q13")
     render_question_block("Q14")
 
-    render_navigation(next_label="새로운 역량 혼자 계획하기 →")
-
+    st.success("🎖️ 계획 수립 미션 완료! 다음 단계는 선택형 추가 연습입니다.")
+    render_navigation(next_label="다음 역량을 연습하거나 마무리하기 →")
 
 def render_s06():
-    st.caption("STEP 6 / 7 · 독립 수행 미션")
-    st.title("이제 도움 없이 새 역량을 계획해 보세요")
-    st.warning(
-        f"앞서 연습한 집중 역량(**{st.session_state.skill}**)을 제외한 다른 핵심 요소를 하나 선택하고, "
-        "길잡이 질문이나 AI 힌트 없이 스스로 4주 학습 계획을 세워 보세요."
-    )
-
-    job_data = CFG["jobs_db"][st.session_state.job_category][st.session_state.job_title]
-    remaining_skills = [s for s in job_data["skills"] if s != st.session_state.skill]
-
-    if not remaining_skills:
-        remaining_skills = job_data["skills"]
-
-    default_ind_idx = (
-        remaining_skills.index(st.session_state.ind_skill)
-        if st.session_state.ind_skill in remaining_skills
-        else 0
-    )
-
-    selected_ind_skill = st.radio(
-        "독립 수행할 핵심 역량 선택",
-        options=remaining_skills,
-        index=default_ind_idx,
-    )
-    st.session_state.ind_skill = selected_ind_skill
-
-    st.divider()
-    for field in CFG["assessment_fields"]:
-        fid = field["id"]
-        st.markdown(f"#### {field['label']} *(필수)*")
-        val = st.text_area(
-            label=field["label"],
-            value=st.session_state.ind_answers.get(fid, ""),
-            placeholder=field["placeholder"],
-            key=f"ind_input_{fid}",
-            label_visibility="collapsed",
-            height=95,
-        )
-        st.session_state.ind_answers[fid] = val
-
-    render_navigation(next_label="독립 미션 완료 →")
-
+    st.caption("STEP 6 / 7 · 다음 역량 계획 (선택)")
+    st.title("배운 방법을 다른 역량에도 적용해 볼까요?")
+    st.info("추가로 연습하고 싶을 때만 작성하세요. 이 활동은 평가나 점수 비교가 아닙니다.")
+    enabled = st.checkbox("다른 역량에 대한 계획도 직접 작성해 볼래요", key="practice_next_skill_v7")
+    if enabled:
+        job_data = CFG["jobs_db"][st.session_state.job_category][st.session_state.job_title]
+        remaining = [s for s in job_data["skills"] if s != st.session_state.skill] or job_data["skills"]
+        selected = st.selectbox("다음에 계획할 역량", remaining,
+            index=remaining.index(st.session_state.ind_skill) if st.session_state.ind_skill in remaining else 0,
+            key="practice_skill_selector_v7")
+        st.session_state.ind_skill = selected
+        st.caption("앞에서 배운 흐름을 떠올리되, 답변은 스스로 작성해 보세요.")
+        for field in CFG["assessment_fields"]:
+            fid = field["id"]
+            label = field["label"].replace("필요 역량과 나의 현재 수준", "나의 현재 역량과 보완할 점")
+            st.markdown(f"**{label}** (선택)")
+            new_val = st.text_area(label, value=st.session_state.ind_answers.get(fid, ""),
+                placeholder=field["placeholder"], key=f"ind_input_{fid}",
+                label_visibility="collapsed", height=90)
+            st.session_state.ind_answers[fid] = new_val
+    else:
+        st.session_state.ind_skill = ""
+        st.caption("추가 연습은 건너뛰어도 학습 계획을 저장할 수 있어요.")
+    render_navigation(next_label="계획 마무리와 성찰로 →")
 
 def render_s07():
     st.caption("STEP 7 / 7 · 완료 및 내보내기")
     st.title("🎉 나만의 진로 학습 계획을 완성했어요!")
-    st.markdown("첫 번째 핵심 역량을 스캐폴딩과 함께 설계하고, 두 번째 역량에 스스로 적용해 보았습니다.")
+    st.markdown("단계별 질문을 활용해 나의 학습 계획을 완성했어요. 이제 경험을 돌아보고 계획을 저장해 보세요.")
 
     st.success(
         f"**최종 완료 요약**\n\n"
@@ -1584,10 +1581,11 @@ def render_s07():
         f"- **첫 번째 집중 역량:** {st.session_state.skill}\n"
         f"- **4주 핵심 목표 (Q07):** {st.session_state.answers.get('Q07', '(미입력)')}\n"
         f"- **오늘/내일 첫 행동 (Q13):** {st.session_state.answers.get('Q13', '(미입력)')}\n"
-        f"- **독립 수행 미션 역량:** {st.session_state.ind_skill or '(미선택)'}\n"
+        f"- **선택형 추가 연습 역량:** {st.session_state.ind_skill or '(미선택)'}\n"
         f"- **등록한 캘린더 일정:** {len(st.session_state.events)}개"
     )
 
+    reflection_done = render_experience_review(st, st.session_state)
     st.subheader("📥 결과 파일 내보내기")
     col1, col2, col3 = st.columns(3)
 
@@ -1621,16 +1619,14 @@ def render_s07():
             st.rerun()
 
     st.divider()
-    with st.expander("📊 학습 계획 평가 루브릭 (자가 점검 및 팀원 피드백 기준표) 보기"):
-        st.caption("본 루브릭은 수립한 학습 계획의 구체성과 실행 가능성을 점검하기 위한 참조 기준입니다.")
-        st.dataframe(pd.DataFrame(CFG["rubric"]), use_container_width=True, hide_index=True)
-
+    additional_exports(st, st.session_state, CFG, reflection_done)
     render_navigation(show_prev=True, show_next=False)
 
 
 # ==============================================================================
 # 5. 메인 엔트리포인트
 # ==============================================================================
+
 def main():
     st.set_page_config(
         page_title="진로 스캐폴딩 플랫폼",
@@ -1638,6 +1634,14 @@ def main():
         layout="wide",
     )
     init_session_state()
+    st.markdown("""<style>
+    .stApp {background-color:#f6f9fc;}
+    [data-testid="stMainBlockContainer"] {max-width:1040px; padding-top:2.2rem;}
+    h1,h2,h3 {letter-spacing:-.02em; color:#20374f;}
+    div[data-testid="stAlert"] {border-radius:12px;}
+    [data-testid="stExpander"] {border-radius:12px;}
+    div.stButton > button[kind="primary"] {border-radius:10px; background:#167d88; border-color:#167d88;}
+    </style>""", unsafe_allow_html=True)
     render_sidebar()
 
     step = st.session_state.step

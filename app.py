@@ -665,6 +665,10 @@ CFG = {
             "required": True,
             "placeholder": "예: 문제를 발견하는 것은 가능하지만, 데이터를 근거로 원인을 구조화하는 부분이 부족해요.",
             "default_hint": "선택한 직무의 '선정 근거가 된 업무'를 보며 현재 내 수준과 가장 차이가 큰 부분을 찾아보세요.",
+            "ai_prompt": (
+                "이 문항(Q05)은 학습자가 자신의 현재 역량 평가 점수와 목표 수준(80%)의 차이를 직무 맥락에서 해석해 '보완 지점'을 한 문장으로 정의하는 단계입니다. "
+                "학습자의 집중 역량 점수·목표와의 차이(Gap) 및 직무 대표 업무를 참고하여, '단순히 부족하다'가 아니라 대표 업무 중 어떤 구체적 과업/행동에서 격차가 느껴지는지 스스로 짚어내도록 돕는 관점 팁과 성찰 질문을 제시하세요."
+            ),
         },
         "Q06": {
             "screen": "S03",
@@ -673,6 +677,10 @@ CFG = {
             "required": True,
             "placeholder": "예: 실무 과제의 출발점이 되는 '문제 정의 및 근거 정리'부터 먼저 익히고 싶습니다.",
             "default_hint": "하고 싶은 것이 여러 개라면 이번 달 안에 바로 시작 가능한 하나를 고르세요.",
+            "ai_prompt": (
+                "이 문항(Q06)은 여러 보완점 중 4주 동안 가장 먼저 집중할 '단 하나의 우선순위'와 그 이유를 결정하는 단계입니다. "
+                "Q05에서 학습자가 적은 보완 지점을 바탕으로, 왜 그것이 직무 수행의 출발점이 되거나 다른 역량 성장에 파급 효과가 큰지 스스로 우선순위 근거를 정리할 수 있도록 유도하세요."
+            ),
         },
         "Q07": {
             "screen": "S03",
@@ -681,6 +689,10 @@ CFG = {
             "required": True,
             "placeholder": "예: 관심 도메인 사례 3건을 분석해 문제 정의서 1쪽과 대안 비교표를 작성한다.",
             "default_hint": "'열심히 공부하기' 대신 '직접 수행할 행동 + 눈으로 확인할 수 있는 결과물'로 적어보세요.",
+            "ai_prompt": (
+                "이 문항(Q07)은 Q06의 우선순위를 4주 후 달성 가능한 구체적 행동 목표(Behavioral Objective)로 전환하는 단계입니다. "
+                "'이해하기/공부하기' 같은 추상적 목표 대신, 4주 뒤에 직접 수행할 수 있는 행동(동사)과 눈에 보이는 산출물(형태·분량·횟수)이 드러나도록 다듬는 코칭 팁과 질문을 제시하세요."
+            ),
         },
         "Q08": {
             "screen": "S03",
@@ -689,6 +701,10 @@ CFG = {
             "required": True,
             "placeholder": "예: 1쪽 분량의 분석 요약본 완성 및 체크리스트 3가지 기준 충족 여부로 확인한다.",
             "default_hint": "다른 사람이 결과물을 보더라도 완료 여부를 판단할 수 있도록 형태나 횟수를 적어 주세요.",
+            "ai_prompt": (
+                "이 문항(Q08)은 Q07에서 세운 4주 목표의 달성 여부를 객관적으로 판별할 평가 기준(Evidence/Criteria)을 정하는 단계입니다. "
+                "학습자의 Q07 목표 초안을 참고하여, 제3자가 결과물만 보고도 완료 여부와 수준을 판단할 수 있는 검증 기준(산출물 목록, 충족 조건, 자기점검 항목 등)을 세우도록 질문하세요."
+            ),
         },
         "Q09": {
             "screen": "S04",
@@ -697,6 +713,10 @@ CFG = {
             "required": True,
             "placeholder": "예: 1) 공개 보고서 2건 요약하기 2) 핵심 지표 비교표 만들기 3) 피드백 받아 수정하기",
             "default_hint": "강의 듣기나 책 읽기로 끝내지 않고, 배운 내용을 직접 적용해 산출물을 만드는 활동을 포함하세요.",
+            "ai_prompt": (
+                "이 문항(Q09)은 S03에서 설정한 4주 목표(Q07)와 달성 기준(Q08)에 도달하기 위한 실행 활동(1~3개)을 설계하는 단계입니다. "
+                "강의 시청·책 읽기 같은 수동적 투입(Input)에 머무르지 않고, 직무 역량과 연결된 능동적 실습·산출물 제작(Output) 활동으로 구체화할 수 있도록 스캐폴딩 질문을 제시하세요."
+            ),
         },
         "Q10": {
             "screen": "S04",
@@ -705,6 +725,10 @@ CFG = {
             "required": True,
             "placeholder": "예: 1주차 화·목 30분 사례 조사 → 2주차 주말 1시간 비교표 작성.",
             "default_hint": "요일, 주차 또는 마감일을 구체적으로 적고 하단 캘린더에도 직접 등록해 보세요.",
+            "ai_prompt": (
+                "이 문항(Q10)은 Q09의 학습 활동을 4주 시간표 위에 현실적으로 배치하고 실행 순서를 정하는 단계입니다. "
+                "학습자가 적은 Q09 활동을 참고하여, 1) 어떤 활동이 선행되어야 다음 단계로 넘어갈 수 있는지(의존성/순서), 2) 대학생의 주간 일정 속에서 실현 가능한 단위 시간(요일·회당 분량)을 어떻게 잡을지 성찰하도록 돕는 질문을 제시하세요."
+            ),
         },
         "Q11": {
             "screen": "S04",
@@ -713,6 +737,10 @@ CFG = {
             "required": False,
             "placeholder": "예: 전공 수업 자료, 공공데이터포털, 현직자 멘토링 질문 리스트 등",
             "default_hint": "지금 바로 이용 가능한 무료 자료나 주변(선배, 교수님, 온라인 커뮤니티)의 도움을 떠올려 보세요.",
+            "ai_prompt": (
+                "이 문항(Q11)은 Q09 학습 활동을 실제로 수행하는 데 필요한 학습 자원(Resource)과 인적 지원(Help-seeking)을 구체화하는 단계입니다. "
+                "직무와 Q09 활동 맥락에 비추어, 자료 탐색에 시간을 뺏기지 않도록 당장 접근 가능한 구체적 자료 유형(공개 데이터·공식 가이드·사례집 등)과 피드백을 구할 대상(선배·교수·현직자 등)을 짝지어 보도록 유도하세요."
+            ),
         },
         "Q12": {
             "screen": "S04",
@@ -721,6 +749,10 @@ CFG = {
             "required": False,
             "placeholder": "예: 시험 기간이나 과제 마감 주간에는 분량을 절반으로 줄이고 핵심 요약만 진행한다.",
             "default_hint": "시간 부족·자료 부족·동기 저하 중 현실적으로 생길 수 있는 상황과 최소 실행 대안을 적어보세요.",
+            "ai_prompt": (
+                "이 문항(Q12)은 실행 과정에서 마주칠 현실적 장애물을 예측하고 계획을 포기하지 않기 위한 유연한 대안(Plan B / 최소 실행 기준)을 세우는 단계입니다. "
+                "학습자의 Q09 활동과 Q10 일정을 고려해, 가장 발생 가능성이 높은 방해 요인(예: 시험·과제 집중 주간, 실습 난관 등)을 가정하고 분량을 축소해 흐름을 이어갈 수 있는 최소 실행 대안을 설계하도록 질문하세요."
+            ),
         },
         "Q13": {
             "screen": "S05",
@@ -912,12 +944,47 @@ def reset_all_state():
     init_session_state()
 
 
+def _build_question_context(question_id: str, skill: str) -> str:
+    """S3·S4 각 문항의 AI 프롬프트에 전달할 학습자 맥락 정보 구성"""
+    answers = st.session_state.get("answers", {})
+    scores = st.session_state.get("scores", {})
+    lines = []
+
+    if question_id in ("Q05", "Q06", "Q07", "Q08"):
+        score = scores.get(skill, 50)
+        gap = max(0, 80 - score)
+        lines.append(f"- 집중 역량 자기평가 점수: {score}% (시연용 목표 80% 대비 차이 {gap}%p)")
+        if answers.get("Q03", "").strip():
+            lines.append(f"- 현재 혼자 할 수 있는 일(Q03): {answers['Q03'].strip()}")
+        if answers.get("Q04", "").strip():
+            lines.append(f"- 현재 어려운 일(Q04): {answers['Q04'].strip()}")
+        if question_id in ("Q06", "Q07", "Q08") and answers.get("Q05", "").strip():
+            lines.append(f"- 보완하고 싶은 지점(Q05): {answers['Q05'].strip()}")
+        if question_id in ("Q07", "Q08") and answers.get("Q06", "").strip():
+            lines.append(f"- 최우선 개발 역량/행동(Q06): {answers['Q06'].strip()}")
+        if question_id == "Q08" and answers.get("Q07", "").strip():
+            lines.append(f"- 4주 학습 목표(Q07): {answers['Q07'].strip()}")
+
+    elif question_id in ("Q09", "Q10", "Q11", "Q12"):
+        if answers.get("Q06", "").strip():
+            lines.append(f"- 최우선 개발 역량/행동(Q06): {answers['Q06'].strip()}")
+        if answers.get("Q07", "").strip():
+            lines.append(f"- 4주 학습 목표(Q07): {answers['Q07'].strip()}")
+        if answers.get("Q08", "").strip():
+            lines.append(f"- 달성 확인 기준(Q08): {answers['Q08'].strip()}")
+        if question_id in ("Q10", "Q11", "Q12") and answers.get("Q09", "").strip():
+            lines.append(f"- 계획한 학습 활동(Q09): {answers['Q09'].strip()}")
+        if question_id == "Q12" and answers.get("Q10", "").strip():
+            lines.append(f"- 설정한 일정과 순서(Q10): {answers['Q10'].strip()}")
+
+    return "\n".join(lines) if lines else "- (이전 단계 입력 정보 없음)"
+
+
 def get_ai_scaffolding_hint(question_id: str, job_title: str, skill: str, current_answer: str, api_key: str) -> str:
     """
-    AI 스캐폴딩 힌트 생성 함수.
-    OpenAI API Key가 입력된 경우 Chat Completions API를 호출하여
+    S3·S4 문항별 맞춤 AI 스캐폴딩 힌트 생성 함수.
+    OpenAI API Key가 입력된 경우 문항별 전용 프롬프트와 학습자 맥락을 조합해 호출하며,
     답을 대신 작성해주지 않고 스스로 생각할 수 있는 스캐폴딩 질문과 팁을 제공합니다.
-    네트워크 제한이나 테스트 키 사용 시에는 맥락 기반 스캐폴딩 가이드로 안전하게 폴백합니다.
     """
     if not api_key:
         return "시작 화면이나 사이드바에 OpenAI API Key를 입력하면 AI 맞춤 힌트를 사용할 수 있습니다."
@@ -925,20 +992,24 @@ def get_ai_scaffolding_hint(question_id: str, job_title: str, skill: str, curren
     q_info = CFG["questions"].get(question_id, {})
     base_hint = q_info.get("default_hint", "")
     prompt_text = q_info.get("prompt", "")
+    question_ai_prompt = q_info.get("ai_prompt", "")
     job_task = CFG["jobs_db"].get(st.session_state.job_category, {}).get(job_title, {}).get("task", "")
+    learner_context = _build_question_context(question_id, skill)
 
     system_msg = (
-        "당신은 대학생의 진로 학습 계획 수립을 돕는 교육공학 스캐폴딩 코치입니다."
-        "절대로 학습자를 대신해 답안이나 계획을 완성해서 써주지 마세요."
-        "학습자가 선택한 희망 직무, 대표 업무, 집중 역량, 그리고 현재까지 작성한 초안을 바탕으로"
-        "스스로 생각을 구체화할 수 있도록 1) 핵심 관점 팁 1문장, 2) 성찰을 유도하는 후속 질문 2가지를 한국어로 간결하게 제시하세요."
+        "당신은 대학생의 진로 학습 계획 수립을 돕는 교육공학 스캐폴딩 코치입니다. "
+        "절대로 학습자를 대신해 답안이나 계획을 완성해서 써주지 마세요. "
+        "아래 문항별 코칭 지침과 학습자의 직무·역량·이전 작성 맥락을 반영하여, "
+        "학습자가 스스로 생각을 구체화할 수 있도록 1) 핵심 관점 팁 1~2문장, 2) 성찰을 유도하는 구체적인 후속 질문 2가지를 한국어로 간결하게 제시하세요.\n\n"
+        f"[문항별 코칭 지침 - {question_id} ({q_info.get('label', '')})]\n{question_ai_prompt}"
     )
     user_msg = (
         f"- 희망 직무: {job_title} (대표 업무: {job_task})\n"
         f"- 집중 핵심 역량: {skill}\n"
         f"- 현재 문항({question_id}): {prompt_text}\n"
         f"- 기본 가이드: {base_hint}\n"
-        f"- 학습자 현재 작성 내용: {current_answer.strip() or '(아직 작성 전)'}"
+        f"[학습자 맥락 정보]\n{learner_context}\n"
+        f"- 현재 문항에 작성 중인 초안: {current_answer.strip() or '(아직 작성 전)'}"
     )
 
     try:
@@ -950,7 +1021,7 @@ def get_ai_scaffolding_hint(question_id: str, job_title: str, skill: str, curren
                     {"role": "user", "content": user_msg},
                 ],
                 "temperature": 0.6,
-                "max_tokens": 300,
+                "max_tokens": 350,
             }
         )
         # Stlite (Pyodide WebAssembly 브라우저 환경) 및 일반 Python 환경 모두 지원
@@ -965,7 +1036,7 @@ def get_ai_scaffolding_hint(question_id: str, job_title: str, skill: str, curren
             if xhr.status == 200:
                 resp_data = json.loads(xhr.responseText)
                 ai_text = resp_data["choices"][0]["message"]["content"].strip()
-                return f"🤖 **[AI 스캐폴딩 코치 | {job_title} · {skill}]**\n\n{ai_text}"
+                return f"🤖 **[AI 스캐폴딩 코치 | {question_id} · {job_title}]**\n\n{ai_text}"
             raise RuntimeError(f"HTTP {xhr.status}")
         except ImportError:
             req = urllib.request.Request(
@@ -980,7 +1051,7 @@ def get_ai_scaffolding_hint(question_id: str, job_title: str, skill: str, curren
             with urllib.request.urlopen(req, timeout=8) as resp:
                 resp_data = json.loads(resp.read().decode("utf-8"))
                 ai_text = resp_data["choices"][0]["message"]["content"].strip()
-                return f"🤖 **[AI 스캐폴딩 코치 | {job_title} · {skill}]**\n\n{ai_text}"
+                return f"🤖 **[AI 스캐폴딩 코치 | {question_id} · {job_title}]**\n\n{ai_text}"
     except Exception:
         user_context = (
             f"현재 작성하신 내용('{current_answer[:35]}...')에서 한 걸음 더 나아가 볼까요?"
@@ -988,16 +1059,15 @@ def get_ai_scaffolding_hint(question_id: str, job_title: str, skill: str, curren
             else "아직 작성을 시작하기 전이시군요! 완벽한 문장이 아니어도 괜찮으니 작은 키워드부터 적어보세요."
         )
         return (
-            f"🤖 **[AI 스캐폴딩 가이드 | {job_title} - {skill}]**\n\n"
-            f"- **핵심 팁:** {base_hint}\n"
-            f"- **대표 업무 연결:** `{job_title}` 직무는 *'{job_task}'* 업무를 수행합니다.\n"
-            f"- **맞춤 성찰 질문:** {user_context} "
-            f"이 업무 맥락에서 `{skill}` 역량을 발휘하기 위해 오늘 당장 해볼 수 있는 가장 작은 단위의 행동은 무엇일까요?"
+            f"🤖 **[AI 스캐폴딩 가이드 | {question_id} · {job_title} - {skill}]**\n\n"
+            f"- **문항 핵심 초점:** {question_ai_prompt or base_hint}\n"
+            f"- **직무 업무 연결:** `{job_title}` 직무는 *'{job_task}'* 업무를 수행합니다.\n"
+            f"- **맞춤 성찰 질문:** {user_context}"
         )
 
 
 def render_question_block(qid: str, disabled: bool = False):
-    """질문 텍스트 영역 + 빠른 시작 칩(Chip) + AI 힌트 Expander 렌더링"""
+    """질문 텍스트 영역 + 빠른 시작 칩(Chip) + (S3·S4 한정 AI 힌트) Expander 렌더링"""
     q = CFG["questions"][qid]
     req_badge = " *(필수)*" if q["required"] else " *(선택)*"
     st.markdown(f"#### {qid} · {q['label']}{req_badge}")
@@ -1030,23 +1100,27 @@ def render_question_block(qid: str, disabled: bool = False):
     if not disabled:
         st.session_state.answers[qid] = new_val
 
-    with st.expander("💡 힌트 및 스캐폴딩 도움말 보기"):
-        api_key = st.session_state.get("openai_api_key", "").strip()
+    supports_ai = q.get("screen") in ("S03", "S04")
+    expander_label = "💡 힌트 및 AI 스캐폴딩 도움말 보기" if supports_ai else "💡 기본 힌트 보기"
+
+    with st.expander(expander_label):
         st.info(f"**기본 힌트:** {q['default_hint']}")
-        if not api_key:
-            st.caption("ℹ️ 현재 **기본 힌트 모드**로 설정되어 있습니다. (AI 맞춤 힌트를 원하시면 시작 화면이나 사이드바에서 OpenAI API Key를 입력해 주세요.)")
-        else:
-            if st.button("🤖 AI 맞춤 스캐폴딩 힌트 받아오기", key=f"ai_btn_{qid}", disabled=disabled):
-                with st.spinner("AI 스캐폴딩 코치가 맞춤 질문을 생성하고 있습니다..."):
-                    st.session_state.ai_hints[qid] = get_ai_scaffolding_hint(
-                        question_id=qid,
-                        job_title=st.session_state.job_title,
-                        skill=st.session_state.skill,
-                        current_answer=st.session_state.answers.get(qid, ""),
-                        api_key=api_key,
-                    )
-            if qid in st.session_state.ai_hints:
-                st.success(st.session_state.ai_hints[qid])
+        if supports_ai:
+            api_key = st.session_state.get("openai_api_key", "").strip()
+            if not api_key:
+                st.caption("ℹ️ 현재 **기본 힌트 모드**로 설정되어 있습니다. (S3·S4 단계에서 AI 맞춤 힌트를 원하시면 시작 화면이나 사이드바에서 OpenAI API Key를 입력해 주세요.)")
+            else:
+                if st.button("🤖 AI 맞춤 스캐폴딩 힌트 받아오기", key=f"ai_btn_{qid}", disabled=disabled):
+                    with st.spinner("AI 스캐폴딩 코치가 맞춤 질문을 생성하고 있습니다..."):
+                        st.session_state.ai_hints[qid] = get_ai_scaffolding_hint(
+                            question_id=qid,
+                            job_title=st.session_state.job_title,
+                            skill=st.session_state.skill,
+                            current_answer=st.session_state.answers.get(qid, ""),
+                            api_key=api_key,
+                        )
+                if qid in st.session_state.ai_hints:
+                    st.success(st.session_state.ai_hints[qid])
 
 
 def build_ics_content(events: list) -> str:
@@ -1209,7 +1283,7 @@ def render_sidebar():
             value=st.session_state.openai_api_key,
             type="password",
             placeholder="sk-... (미입력 시 기본 힌트)",
-            help="API 키를 입력하면 AI 맞춤 스캐폴딩 힌트가 활성화되며, 비워두면 기본 힌트로 동작합니다.",
+            help="API 키를 입력하면 S3·S4 단계에서 AI 맞춤 스캐폴딩 힌트가 활성화되며, 비워두면 기본 힌트로 동작합니다.",
         )
         st.session_state.openai_api_key = api_key_input.strip()
         st.session_state.hint_mode = "ai" if st.session_state.openai_api_key else "default"
@@ -1258,7 +1332,7 @@ def render_s00():
     st.divider()
     st.subheader("시작 전 힌트 방식 설정")
     st.caption(
-        "진로 설계 중 막히는 질문이 있을 때 **AI 스캐폴딩의 도움**을 받고 싶다면 아래에 OpenAI API Key를 입력해 주세요. "
+        "S3(역량 차이·목표 설정)와 S4(학습 계획 수립) 단계에서 **AI 스캐폴딩의 도움**을 받고 싶다면 아래에 OpenAI API Key를 입력해 주세요. "
         "키가 없거나 입력하지 않고 시작하면 자동으로 **기본 힌트 모드**로 설정됩니다."
     )
 

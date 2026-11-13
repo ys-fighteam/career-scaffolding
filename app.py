@@ -649,6 +649,10 @@ CFG = {
             "required": True,
             "placeholder": "예: 주어진 자료를 읽고 핵심 내용을 3줄로 요약할 수 있어요.",
             "default_hint": "도움 없이 지금 바로 해낼 수 있는 가장 작은 행동부터 떠올려 보세요.",
+            "ai_prompt": (
+                "이 문항(Q03)은 학습자가 선택한 직무의 대표 업무와 핵심 역량을 기준으로, '지금 당장 도움 없이 혼자 수행할 수 있는 가장 작은 행동'을 구체화하는 단계입니다. "
+                "수업 과제·동아리·아르바이트·개인 활동 등 대학생의 일상 경험 속에서 해당 역량이 발휘되었던 구체적 장면(예: 자료 요약, 표 정리, 문제 발견, 의견 조율 등)을 떠올려 '무엇을/어디까지' 혼자 할 수 있는지 문장으로 표현하도록 유도하는 팁과 성찰 질문 2가지를 제시하세요."
+            ),
         },
         "Q04": {
             "screen": "S02",
@@ -657,6 +661,10 @@ CFG = {
             "required": True,
             "placeholder": "예: 여러 대안을 객관적인 기준으로 비교하거나 실무 문서 형태로 구조화하기 어려워요.",
             "default_hint": "시작하기, 기준 정하기, 도구 활용하기, 결과 검증하기 중 가장 막히는 지점을 적어보세요.",
+            "ai_prompt": (
+                "이 문항(Q04)은 학습자가 Q03에서 정리한 현재 수행 가능 수준과 직무 대표 업무 사이의 간극 중, '아직 혼자 하기 어렵거나 막히는 구체적 지점'을 진단하는 단계입니다. "
+                "단순히 '어렵다/모르겠다'로 끝나지 않도록, 1) 시작 단계(문제·기준 설정), 2) 실행 단계(도구·방법 활용), 3) 검증 단계(결과 해석·피드백 반영) 중 어느 부분에서 막히는지 좁혀보도록 돕는 팁과 성찰 질문 2가지를 제시하세요."
+            ),
         },
         "Q05": {
             "screen": "S03",
@@ -665,10 +673,6 @@ CFG = {
             "required": True,
             "placeholder": "예: 문제를 발견하는 것은 가능하지만, 데이터를 근거로 원인을 구조화하는 부분이 부족해요.",
             "default_hint": "선택한 직무의 '선정 근거가 된 업무'를 보며 현재 내 수준과 가장 차이가 큰 부분을 찾아보세요.",
-            "ai_prompt": (
-                "이 문항(Q05)은 학습자가 자신의 현재 역량 평가 점수와 목표 수준(80%)의 차이를 직무 맥락에서 해석해 '보완 지점'을 한 문장으로 정의하는 단계입니다. "
-                "학습자의 집중 역량 점수·목표와의 차이(Gap) 및 직무 대표 업무를 참고하여, '단순히 부족하다'가 아니라 대표 업무 중 어떤 구체적 과업/행동에서 격차가 느껴지는지 스스로 짚어내도록 돕는 관점 팁과 성찰 질문을 제시하세요."
-            ),
         },
         "Q06": {
             "screen": "S03",
@@ -677,10 +681,6 @@ CFG = {
             "required": True,
             "placeholder": "예: 실무 과제의 출발점이 되는 '문제 정의 및 근거 정리'부터 먼저 익히고 싶습니다.",
             "default_hint": "하고 싶은 것이 여러 개라면 이번 달 안에 바로 시작 가능한 하나를 고르세요.",
-            "ai_prompt": (
-                "이 문항(Q06)은 여러 보완점 중 4주 동안 가장 먼저 집중할 '단 하나의 우선순위'와 그 이유를 결정하는 단계입니다. "
-                "Q05에서 학습자가 적은 보완 지점을 바탕으로, 왜 그것이 직무 수행의 출발점이 되거나 다른 역량 성장에 파급 효과가 큰지 스스로 우선순위 근거를 정리할 수 있도록 유도하세요."
-            ),
         },
         "Q07": {
             "screen": "S03",
@@ -689,10 +689,6 @@ CFG = {
             "required": True,
             "placeholder": "예: 관심 도메인 사례 3건을 분석해 문제 정의서 1쪽과 대안 비교표를 작성한다.",
             "default_hint": "'열심히 공부하기' 대신 '직접 수행할 행동 + 눈으로 확인할 수 있는 결과물'로 적어보세요.",
-            "ai_prompt": (
-                "이 문항(Q07)은 Q06의 우선순위를 4주 후 달성 가능한 구체적 행동 목표(Behavioral Objective)로 전환하는 단계입니다. "
-                "'이해하기/공부하기' 같은 추상적 목표 대신, 4주 뒤에 직접 수행할 수 있는 행동(동사)과 눈에 보이는 산출물(형태·분량·횟수)이 드러나도록 다듬는 코칭 팁과 질문을 제시하세요."
-            ),
         },
         "Q08": {
             "screen": "S03",
@@ -701,10 +697,6 @@ CFG = {
             "required": True,
             "placeholder": "예: 1쪽 분량의 분석 요약본 완성 및 체크리스트 3가지 기준 충족 여부로 확인한다.",
             "default_hint": "다른 사람이 결과물을 보더라도 완료 여부를 판단할 수 있도록 형태나 횟수를 적어 주세요.",
-            "ai_prompt": (
-                "이 문항(Q08)은 Q07에서 세운 4주 목표의 달성 여부를 객관적으로 판별할 평가 기준(Evidence/Criteria)을 정하는 단계입니다. "
-                "학습자의 Q07 목표 초안을 참고하여, 제3자가 결과물만 보고도 완료 여부와 수준을 판단할 수 있는 검증 기준(산출물 목록, 충족 조건, 자기점검 항목 등)을 세우도록 질문하세요."
-            ),
         },
         "Q09": {
             "screen": "S04",
@@ -715,7 +707,7 @@ CFG = {
             "default_hint": "강의 듣기나 책 읽기로 끝내지 않고, 배운 내용을 직접 적용해 산출물을 만드는 활동을 포함하세요.",
             "ai_prompt": (
                 "이 문항(Q09)은 S03에서 설정한 4주 목표(Q07)와 달성 기준(Q08)에 도달하기 위한 실행 활동(1~3개)을 설계하는 단계입니다. "
-                "강의 시청·책 읽기 같은 수동적 투입(Input)에 머무르지 않고, 직무 역량과 연결된 능동적 실습·산출물 제작(Output) 활동으로 구체화할 수 있도록 스캐폴딩 질문을 제시하세요."
+                "강의 시청·책 읽기 같은 수동적 투입(Input)에 머무르지 않고, 직무 역량과 연결된 능동적 실습·산출물 제작(Output) 활동으로 구체화할 수 있도록 스캐폴딩 팁과 성찰 질문 2가지를 제시하세요."
             ),
         },
         "Q10": {
@@ -727,7 +719,7 @@ CFG = {
             "default_hint": "요일, 주차 또는 마감일을 구체적으로 적고 하단 캘린더에도 직접 등록해 보세요.",
             "ai_prompt": (
                 "이 문항(Q10)은 Q09의 학습 활동을 4주 시간표 위에 현실적으로 배치하고 실행 순서를 정하는 단계입니다. "
-                "학습자가 적은 Q09 활동을 참고하여, 1) 어떤 활동이 선행되어야 다음 단계로 넘어갈 수 있는지(의존성/순서), 2) 대학생의 주간 일정 속에서 실현 가능한 단위 시간(요일·회당 분량)을 어떻게 잡을지 성찰하도록 돕는 질문을 제시하세요."
+                "학습자가 적은 Q09 활동을 참고하여, 1) 어떤 활동이 선행되어야 다음 단계로 넘어갈 수 있는지(선후 관계/우선순위), 2) 대학생의 주간 일정 속에서 실현 가능한 단위 시간(요일·회당 분량)을 어떻게 잡을지 성찰하도록 돕는 팁과 질문 2가지를 제시하세요."
             ),
         },
         "Q11": {
@@ -737,10 +729,6 @@ CFG = {
             "required": False,
             "placeholder": "예: 전공 수업 자료, 공공데이터포털, 현직자 멘토링 질문 리스트 등",
             "default_hint": "지금 바로 이용 가능한 무료 자료나 주변(선배, 교수님, 온라인 커뮤니티)의 도움을 떠올려 보세요.",
-            "ai_prompt": (
-                "이 문항(Q11)은 Q09 학습 활동을 실제로 수행하는 데 필요한 학습 자원(Resource)과 인적 지원(Help-seeking)을 구체화하는 단계입니다. "
-                "직무와 Q09 활동 맥락에 비추어, 자료 탐색에 시간을 뺏기지 않도록 당장 접근 가능한 구체적 자료 유형(공개 데이터·공식 가이드·사례집 등)과 피드백을 구할 대상(선배·교수·현직자 등)을 짝지어 보도록 유도하세요."
-            ),
         },
         "Q12": {
             "screen": "S04",
@@ -749,10 +737,6 @@ CFG = {
             "required": False,
             "placeholder": "예: 시험 기간이나 과제 마감 주간에는 분량을 절반으로 줄이고 핵심 요약만 진행한다.",
             "default_hint": "시간 부족·자료 부족·동기 저하 중 현실적으로 생길 수 있는 상황과 최소 실행 대안을 적어보세요.",
-            "ai_prompt": (
-                "이 문항(Q12)은 실행 과정에서 마주칠 현실적 장애물을 예측하고 계획을 포기하지 않기 위한 유연한 대안(Plan B / 최소 실행 기준)을 세우는 단계입니다. "
-                "학습자의 Q09 활동과 Q10 일정을 고려해, 가장 발생 가능성이 높은 방해 요인(예: 시험·과제 집중 주간, 실습 난관 등)을 가정하고 분량을 축소해 흐름을 이어갈 수 있는 최소 실행 대안을 설계하도록 질문하세요."
-            ),
         },
         "Q13": {
             "screen": "S05",
@@ -945,44 +929,43 @@ def reset_all_state():
 
 
 def _build_question_context(question_id: str, skill: str) -> str:
-    """S3·S4 각 문항의 AI 프롬프트에 전달할 학습자 맥락 정보 구성"""
+    """Q03·Q04·Q09·Q10 각 문항의 AI 프롬프트에 전달할 학습자 맥락 정보 구성"""
     answers = st.session_state.get("answers", {})
-    scores = st.session_state.get("scores", {})
     lines = []
 
-    if question_id in ("Q05", "Q06", "Q07", "Q08"):
-        score = scores.get(skill, 50)
-        gap = max(0, 80 - score)
-        lines.append(f"- 집중 역량 자기평가 점수: {score}% (시연용 목표 80% 대비 차이 {gap}%p)")
+    if question_id == "Q03":
+        if st.session_state.get("no_experience"):
+            lines.append("- 관련 경험 여부: 아직 관련 경험 없음")
+        else:
+            if answers.get("Q01", "").strip():
+                lines.append(f"- 관련 경험(Q01): {answers['Q01'].strip()}")
+            if answers.get("Q02", "").strip():
+                lines.append(f"- 직접 수행한 일(Q02): {answers['Q02'].strip()}")
+
+    elif question_id == "Q04":
         if answers.get("Q03", "").strip():
             lines.append(f"- 현재 혼자 할 수 있는 일(Q03): {answers['Q03'].strip()}")
-        if answers.get("Q04", "").strip():
-            lines.append(f"- 현재 어려운 일(Q04): {answers['Q04'].strip()}")
-        if question_id in ("Q06", "Q07", "Q08") and answers.get("Q05", "").strip():
-            lines.append(f"- 보완하고 싶은 지점(Q05): {answers['Q05'].strip()}")
-        if question_id in ("Q07", "Q08") and answers.get("Q06", "").strip():
-            lines.append(f"- 최우선 개발 역량/행동(Q06): {answers['Q06'].strip()}")
-        if question_id == "Q08" and answers.get("Q07", "").strip():
-            lines.append(f"- 4주 학습 목표(Q07): {answers['Q07'].strip()}")
 
-    elif question_id in ("Q09", "Q10", "Q11", "Q12"):
+    elif question_id == "Q09":
         if answers.get("Q06", "").strip():
             lines.append(f"- 최우선 개발 역량/행동(Q06): {answers['Q06'].strip()}")
         if answers.get("Q07", "").strip():
             lines.append(f"- 4주 학습 목표(Q07): {answers['Q07'].strip()}")
         if answers.get("Q08", "").strip():
             lines.append(f"- 달성 확인 기준(Q08): {answers['Q08'].strip()}")
-        if question_id in ("Q10", "Q11", "Q12") and answers.get("Q09", "").strip():
-            lines.append(f"- 계획한 학습 활동(Q09): {answers['Q09'].strip()}")
-        if question_id == "Q12" and answers.get("Q10", "").strip():
-            lines.append(f"- 설정한 일정과 순서(Q10): {answers['Q10'].strip()}")
 
-    return "\n".join(lines) if lines else "- (이전 단계 입력 정보 없음)"
+    elif question_id == "Q10":
+        if answers.get("Q07", "").strip():
+            lines.append(f"- 4주 학습 목표(Q07): {answers['Q07'].strip()}")
+        if answers.get("Q09", "").strip():
+            lines.append(f"- 계획한 학습 활동(Q09): {answers['Q09'].strip()}")
+
+    return "\n".join(lines) if lines else "- (이전 문항 입력 정보 없음)"
 
 
 def get_ai_scaffolding_hint(question_id: str, job_title: str, skill: str, current_answer: str, api_key: str) -> str:
     """
-    S3·S4 문항별 맞춤 AI 스캐폴딩 힌트 생성 함수.
+    Q03·Q04·Q09·Q10 전용 맞춤 AI 스캐폴딩 힌트 생성 함수.
     OpenAI API Key가 입력된 경우 문항별 전용 프롬프트와 학습자 맥락을 조합해 호출하며,
     답을 대신 작성해주지 않고 스스로 생각할 수 있는 스캐폴딩 질문과 팁을 제공합니다.
     """
@@ -1067,7 +1050,7 @@ def get_ai_scaffolding_hint(question_id: str, job_title: str, skill: str, curren
 
 
 def render_question_block(qid: str, disabled: bool = False):
-    """질문 텍스트 영역 + 빠른 시작 칩(Chip) + (S3·S4 한정 AI 힌트) Expander 렌더링"""
+    """질문 텍스트 영역 + 빠른 시작 칩(Chip) + (Q03·Q04·Q09·Q10 한정 AI 힌트) Expander 렌더링"""
     q = CFG["questions"][qid]
     req_badge = " *(필수)*" if q["required"] else " *(선택)*"
     st.markdown(f"#### {qid} · {q['label']}{req_badge}")
@@ -1100,7 +1083,7 @@ def render_question_block(qid: str, disabled: bool = False):
     if not disabled:
         st.session_state.answers[qid] = new_val
 
-    supports_ai = q.get("screen") in ("S03", "S04")
+    supports_ai = bool(q.get("ai_prompt"))
     expander_label = "💡 힌트 및 AI 스캐폴딩 도움말 보기" if supports_ai else "💡 기본 힌트 보기"
 
     with st.expander(expander_label):
@@ -1108,7 +1091,7 @@ def render_question_block(qid: str, disabled: bool = False):
         if supports_ai:
             api_key = st.session_state.get("openai_api_key", "").strip()
             if not api_key:
-                st.caption("ℹ️ 현재 **기본 힌트 모드**로 설정되어 있습니다. (S3·S4 단계에서 AI 맞춤 힌트를 원하시면 시작 화면이나 사이드바에서 OpenAI API Key를 입력해 주세요.)")
+                st.caption("ℹ️ 현재 **기본 힌트 모드**로 설정되어 있습니다. (Q03·Q04·Q09·Q10 문항에서 AI 맞춤 힌트를 원하시면 시작 화면이나 사이드바에서 OpenAI API Key를 입력해 주세요.)")
             else:
                 if st.button("🤖 AI 맞춤 스캐폴딩 힌트 받아오기", key=f"ai_btn_{qid}", disabled=disabled):
                     with st.spinner("AI 스캐폴딩 코치가 맞춤 질문을 생성하고 있습니다..."):
@@ -1283,7 +1266,7 @@ def render_sidebar():
             value=st.session_state.openai_api_key,
             type="password",
             placeholder="sk-... (미입력 시 기본 힌트)",
-            help="API 키를 입력하면 S3·S4 단계에서 AI 맞춤 스캐폴딩 힌트가 활성화되며, 비워두면 기본 힌트로 동작합니다.",
+            help="API 키를 입력하면 핵심 문항(Q03·Q04·Q09·Q10)에서 AI 맞춤 스캐폴딩 힌트가 활성화되며, 비워두면 기본 힌트로 동작합니다.",
         )
         st.session_state.openai_api_key = api_key_input.strip()
         st.session_state.hint_mode = "ai" if st.session_state.openai_api_key else "default"
@@ -1332,7 +1315,7 @@ def render_s00():
     st.divider()
     st.subheader("시작 전 힌트 방식 설정")
     st.caption(
-        "S3(역량 차이·목표 설정)와 S4(학습 계획 수립) 단계에서 **AI 스캐폴딩의 도움**을 받고 싶다면 아래에 OpenAI API Key를 입력해 주세요. "
+        "핵심 문항(Q03·Q04 현재 수준 점검, Q09·Q10 학습 활동·일정 수립)에서 **AI 스캐폴딩의 도움**을 받고 싶다면 아래에 OpenAI API Key를 입력해 주세요. "
         "키가 없거나 입력하지 않고 시작하면 자동으로 **기본 힌트 모드**로 설정됩니다."
     )
 
@@ -1512,6 +1495,18 @@ def render_s04():
     render_question_block("Q12")
 
     st.divider()
+    with st.container(border=True):
+        st.subheader("✨ AI 추천 대외활동")
+        st.caption(
+            f"선택한 직무(`{st.session_state.job_title}`)와 역량(`{st.session_state.skill}`)을 키울 수 있는 대외활동을 탐색해 보세요. "
+            "(MVP 단계에서는 주요 대외활동 플랫폼 바로가기 링크를 제공합니다.)"
+        )
+        act_col1, act_col2 = st.columns(2)
+        with act_col1:
+            st.link_button("추천 대외활동 1 ↗", "https://career.yonsei.ac.kr/", use_container_width=True)
+        with act_col2:
+            st.link_button("추천 대외활동 2 ↗", "https://linkareer.com/", use_container_width=True)
+
     st.subheader("🗓️ 캘린더에 실행 일정 추가하기")
     st.caption("계획한 학습 활동을 실제 날짜와 시간(분)으로 등록해 보세요. 완료 단계에서 `.ics` 캘린더 파일로 내려받을 수 있습니다.")
 

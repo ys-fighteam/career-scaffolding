@@ -1571,13 +1571,13 @@ def render_s04():
     with st.container(border=True):
         st.subheader("AI 추천 대외활동")
         st.caption(
-            f"{st.session_state.job_title} 직무와 {st.session_state.skill} 역량에 맞는 대외활동을 탐색해 보세요."
+            f"{st.session_state.job_title} 직무와 {st.session_state.skill} 역량에 맞는 대외활동을 탐색해 보세요. (MVP 상태에서 미구현)"
         )
         act_col1, act_col2 = st.columns(2)
         with act_col1:
-            st.link_button("커리어연세 바로가기", "https://career.yonsei.ac.kr/", icon=":material/open_in_new:", use_container_width=True)
+            st.link_button("추천 대외활동 1", "https://career.yonsei.ac.kr/", icon=":material/open_in_new:", use_container_width=True)
         with act_col2:
-            st.link_button("링커리어 바로가기", "https://linkareer.com/", icon=":material/open_in_new:", use_container_width=True)
+            st.link_button("추천 대외활동 2", "https://linkareer.com/", icon=":material/open_in_new:", use_container_width=True)
 
     st.subheader("캘린더에 실행 일정 추가하기")
     st.caption("학습 일정을 등록하면 완료 단계에서 캘린더 파일(.ics)로 저장할 수 있습니다.")

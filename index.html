@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <title>진로 스캐폴딩 플랫폼</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@stlite/mountable@0.63.1/build/stlite.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@stlite/mountable@0.75.0/build/stlite.css" />
   <style>
     html,
     body,
@@ -22,7 +22,7 @@
 
 <body>
   <div id="root"></div>
-  <script src="https://cdn.jsdelivr.net/npm/@stlite/mountable@0.63.1/build/stlite.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@stlite/mountable@0.75.0/build/stlite.js"></script>
   <script>
     window.addEventListener("message", function (event) {
       if (event.data && event.data.type === "PATHFINDER_SCROLL_TOP") {
@@ -47,16 +47,17 @@
       }
     });
 
+    const cacheBust = Date.now();
     stlite.mount(
       {
         entrypoint: "app.py",
         files: {
           "app.py": {
-            url: "./app.py",
+            url: `./app.py?v=${cacheBust}`,
           },
-          "pathfinder_enhancements_v52.py": { url: "./pathfinder_enhancements_v52.py" },
-          "pathfinder_guidance_v7.py": { url: "./pathfinder_guidance_v7.py" },
-          "pathfinder_examples_v6.json": { url: "./pathfinder_examples_v6.json" },
+          "pathfinder_enhancements_v52.py": { url: `./pathfinder_enhancements_v52.py?v=${cacheBust}` },
+          "pathfinder_guidance_v7.py": { url: `./pathfinder_guidance_v7.py?v=${cacheBust}` },
+          "pathfinder_examples_v6.json": { url: `./pathfinder_examples_v6.json?v=${cacheBust}` },
         },
       },
       document.getElementById("root")

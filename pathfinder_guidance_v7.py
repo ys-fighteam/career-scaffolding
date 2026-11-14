@@ -65,10 +65,10 @@ def render_example_cards(st, state, config):
     skill = state.get('skill', '')
     task = config.get('jobs_db', {}).get(state.get('job_category',''), {}).get(job, {}).get('task', '')
     examples, curated = examples_for(job, skill, task)
-    st.markdown('### 🧩 무엇부터 해볼까요?')
+    st.markdown('### 무엇부터 해볼까요?')
     st.caption('정답이나 필수 활동이 아닙니다. 나에게 맞는 활동을 골라 수정해 보세요.')
     label = '선택한 역량에 맞는 활동 예시 6개' if curated else '시작을 돕는 공통 활동 예시 6개'
-    with st.expander(f'💡 {label}', expanded=False):
+    with st.expander(label, expanded=False):
         if not curated:
             st.caption('이 직무·역량의 전문가 검수 예시는 준비 중입니다. 아래는 범용 학습 활동의 예시입니다.')
         for i, e in enumerate(examples):
@@ -137,7 +137,7 @@ def render_stage_scaffold(st, state, config, qid):
     task = config.get('jobs_db', {}).get(state.get('job_category',''), {}).get(job, {}).get('task','')
     examples, _ = examples_for(job,skill,task)
     answer = state.get('answers', {}).get(qid,'')
-    with st.expander('🧭 답변을 구체화하는 질문 받기',expanded=False):
+    with st.expander('답변을 구체화하는 질문 받기',expanded=False):
         stage_key=f'guide_step_{qid}'
         stage=st.session_state.get(stage_key,0)
         a,b=st.columns(2)
@@ -169,9 +169,9 @@ def render_linkareer_panel(st, state, config):
     if not words:
         words=[job,skill.split('›')[-1].strip()]
     words=list(dict.fromkeys(words))[:4]
-    with st.expander('🔗 관련 대외활동·프로젝트 찾기 (선택)',expanded=False):
-        st.write('다음 키워드로 링커리어에서 직접 공고를 찾아보고, 내 목표에 맞는지 판단해 보세요.')
-        st.write(' · '.join(f'`{w}`' for w in words))
+    with st.expander('관련 대외활동·프로젝트 찾기 (선택)',expanded=False):
+        st.write('다음 키워드로 링커리어에서 공고를 찾아 목표에 맞는지 확인해 보세요.')
+        st.write(' · '.join(words))
         st.markdown(f'[링커리어 대외활동 목록 열기]({LINKAREER_ACTIVITY_URL})')
         st.caption('실시간 공고를 수집하거나 마감일을 검증한 추천은 아닙니다. 공고 원문에서 조건·일정·개인정보 요청을 확인해 주세요.')
         st.text_input('관심 있는 활동 링크를 기록해 두기 (선택)',key='saved_activity_url_v7',
@@ -181,8 +181,8 @@ def render_linkareer_panel(st, state, config):
 
 def render_plan_summary_cards(st,state):
     a=state.get('answers',{})
-    blocks=[('🌱 현재와 개선할 점','Q05'),('🎯 4주 목표·완료 기준','Q07'),
-            ('🛠️ 학습 활동','Q09'),('🗓️ 일정','Q10')]
+    blocks=[('현재와 개선할 점','Q05'),('4주 목표·완료 기준','Q07'),
+            ('학습 활동','Q09'),('일정','Q10')]
     columns=st.columns(2)
     for i,(title,qid) in enumerate(blocks):
         with columns[i%2]:
@@ -193,5 +193,5 @@ def render_plan_summary_cards(st,state):
 
 
 def render_ethics_disclosure(st):
-    st.info('🛡️ 이 서비스는 진로 적합성을 판정하지 않습니다. 제안·예시는 직접 검토하고 수정할 수 있습니다.')
+    st.info('이 서비스는 진로 적합성을 판정하지 않습니다. 제안·예시는 직접 검토하고 수정할 수 있습니다.')
     st.caption('실명·학번·연락처 등 개인정보를 입력하지 마세요. API Key를 통한 AI 기능은 외부 서비스로 학습 답변을 전송할 수 있으므로 사용 전 전송 내용을 확인하세요. 이 시연에서는 저장·보유·삭제 정책이 실제 서비스 운영 시 별도 확정되어야 합니다.')

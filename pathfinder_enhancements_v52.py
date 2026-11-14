@@ -53,7 +53,7 @@ def render_goal_level(st,state):
  key=goal_key(state)
  levels=state.setdefault('goal_levels_v52',{})
  current=get_goal_level(state)
- st.markdown('### 🎯 나의 목표 레벨')
+ st.markdown('### 나의 목표 레벨')
  st.caption('선택한 역량에 대해 이번 4주 동안 도전할 목표 수준을 선택해 보세요.')
  choice=st.radio('목표 레벨 선택',options=[1,2,3,4,5],index=current-1,
     horizontal=True,format_func=lambda x:f'LEVEL {x}',key='goal_radio_v52_'+key)
@@ -69,11 +69,11 @@ def render_goal_level(st,state):
    key='goal_behavior_v52_'+key,height=85,
    placeholder='예: 캠페인 데이터를 비교하고 개선 방향을 스스로 설명할 수 있다.'
  )
- st.caption("🛡️ 이 레벨은 학습자 본인이 선택한 도전 목표입니다. 실제 능력 인증이나 채용 기준이 아닙니다. ‘마스터’도 장기적인 지향을 나타내는 이름입니다.")
+ st.caption("학습자 본인이 선택한 도전 목표이며, 실제 능력 인증이나 채용 기준이 아닙니다.")
 
 def render_experience_review(st,state):
  st.divider()
- st.markdown('### 🌱 나의 역량 경험 점검')
+ st.markdown('### 나의 역량 경험 점검')
  st.caption('학습 계획을 완성했어요. 선택한 역량의 경험을 돌아보세요. 필수 2문항만 작성해도 충분해요.')
  st.markdown('**1. 이 역량을 어떤 방식으로 경험했나요?** (필수 · 복수 선택)')
  ctx=st.multiselect('경험 유형',CONTEXTS,key='v52_ref_contexts')
@@ -115,12 +115,12 @@ def printable_html(state,config):
 
 def additional_exports(st,state,config,reflection_done):
  st.divider()
- st.markdown('### 📄 계획서 추가 저장 형식')
+ st.markdown('### 계획서 추가 저장 형식')
  st.caption('JSON과 ICS 다운로드는 그대로 유지됩니다. PDF로 저장할 때는 HTML 파일을 열고 인쇄 메뉴에서 PDF 저장을 선택하세요.')
  from io import StringIO
  summary=printable_html(state,config)
  md=['# PATHFINDER 나의 학습 계획',f"- 직무: {state.get('job_title','')}",f"- 역량: {state.get('skill','')}",f"- 목표 레벨: {get_goal_level(state)}/5",'']
  for k,v in [('보완할 점',state.get('answers',{}).get('Q05','')),('학습 목표',state.get('answers',{}).get('Q07','')),('학습 활동',state.get('answers',{}).get('Q09','')),('일정',state.get('answers',{}).get('Q10',''))]:md.extend([f'## {k}',str(v),''])
  c1,c2=st.columns(2)
- with c1:st.download_button('🖨️ PDF 저장용 계획서(.html)',data=summary,file_name='pathfinder-print-plan.html',mime='text/html',use_container_width=True,disabled=not reflection_done)
- with c2:st.download_button('📝 읽기 쉬운 계획서(.md)',data='\n'.join(md),file_name='pathfinder-study-plan.md',mime='text/markdown',use_container_width=True,disabled=not reflection_done)
+ with c1:st.download_button('PDF 저장용 계획서(.html)',icon=':material/print:',data=summary,file_name='pathfinder-print-plan.html',mime='text/html',use_container_width=True,disabled=not reflection_done)
+ with c2:st.download_button('읽기 쉬운 계획서(.md)',icon=':material/description:',data='\n'.join(md),file_name='pathfinder-study-plan.md',mime='text/markdown',use_container_width=True,disabled=not reflection_done)

@@ -1312,6 +1312,10 @@ def render_navigation(prev_label="이전 단계", next_label="다음 단계", sh
 # ==============================================================================
 def render_sidebar():
     with st.sidebar:
+        st.markdown("### 온길")
+        st.caption("온전한 내 길 · Own 길 · 내가 지나온 길")
+        st.divider()
+
         # 진행률 표시 (0~7단계)
         current_step = st.session_state.step
         max_step = max(st.session_state.get("max_step", 0), current_step)
@@ -1379,8 +1383,9 @@ def render_sidebar():
 # ==============================================================================
 def render_s00():
     st.caption("STEP 0 / 7 · 도입")
-    st.title("내가 직접 만드는 4주 진로 학습 계획")
-    st.markdown("관심 직무의 핵심 역량과 현재 수준을 비교해 실행 가능한 학습 계획을 세웁니다.")
+    st.title("온길")
+    st.markdown("**온전한 내 길 · Own 길 · 내가 지나온 길**")
+    st.markdown("관심 직무의 핵심 역량과 현재 수준을 비교해 4주 진로 학습 계획을 직접 세웁니다.")
 
     st.info(
         "**학습 흐름 (8단계)**\n\n"
@@ -1796,7 +1801,7 @@ def render_s07():
 
 def main():
     st.set_page_config(
-        page_title="진로 스캐폴딩 플랫폼",
+        page_title="온길 | 진로 스캐폴딩 플랫폼",
         page_icon=":material/explore:",
         layout="wide",
     )

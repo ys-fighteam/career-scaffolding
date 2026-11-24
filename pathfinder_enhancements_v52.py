@@ -60,15 +60,10 @@ def render_goal_level(st,state):
  levels[key]=int(choice)
  current=int(choice)
  # Screenshot-inspired segmented bar; native radio above provides keyboard-accessible control.
- segments=''.join(f'<div style="flex:1;min-width:0;text-align:center"><div style="height:12px;border-radius:12px;background:{"#7f8df4" if i<=current else "#eceef1"};margin-bottom:9px"></div><span style="font-size:11px;color:{"#273b57" if i==current else "#697586"};font-weight:{800 if i==current else 400}">{html.escape(LEVEL_SHORT[i-1])}</span></div>' for i in range(1,6))
+ segments=''.join(f'<div style="flex:1;min-width:0;text-align:center"><div style="height:12px;border-radius:12px;background:{"#6851F5" if i<=current else "#eceef1"};margin-bottom:9px"></div><span style="font-size:11px;color:{"#273b57" if i==current else "#697586"};font-weight:{800 if i==current else 400}">{html.escape(LEVEL_SHORT[i-1])}</span></div>' for i in range(1,6))
  st.markdown(f'<div style="padding:15px;border:1px solid #e2e7ef;border-radius:14px;margin:8px 0 12px"><div style="display:flex;justify-content:space-between;margin-bottom:12px"><b>나의 목표 레벨</b><strong>Lv.{current}/5</strong></div><div style="display:flex;gap:5px">{segments}</div></div>',unsafe_allow_html=True)
  st.caption(f'**LEVEL {current} · {LEVEL_NAMES[current-1]}** — {LEVEL_DESCS[current-1]}')
- state.setdefault('goal_descriptions_v52',{})[key]=st.text_area(
-   '목표에 도달하면 어떤 행동이나 결과물을 만들어 보고 싶나요? (선택)',
-   value=state.setdefault('goal_descriptions_v52',{}).get(key,''),
-   key='goal_behavior_v52_'+key,height=85,
-   placeholder='예: 캠페인 데이터를 비교하고 개선 방향을 스스로 설명할 수 있다.'
- )
+
  st.caption("학습자 본인이 선택한 도전 목표이며, 실제 능력 인증이나 채용 기준이 아닙니다.")
 
 def render_experience_review(st,state):
